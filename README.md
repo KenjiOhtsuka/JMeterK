@@ -25,6 +25,28 @@ JMeterK solves this by letting you define test plans in Kotlin code. The code is
 - JVM 21+
 - Kotlin 2.x
 
+## Installation
+
+Add JitPack to your repositories and declare the dependency:
+
+```kotlin
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+
+// build.gradle.kts
+dependencies {
+    implementation("com.github.KenjiOhtsuka:JMeterK:Tag")
+}
+```
+
+Replace `Tag` with the desired release tag (e.g. `0.1.0`). See [releases](../../releases).
+
 ## Quick Start
 
 ```kotlin

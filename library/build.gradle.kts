@@ -1,6 +1,6 @@
 plugins {
-    id("java")
     kotlin("jvm")
+    `maven-publish`
 }
 
 dependencies {
@@ -13,6 +13,16 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("library") {
+            artifactId = "jmeterk"
+            from(components["java"])
+        }
+    }
 }
