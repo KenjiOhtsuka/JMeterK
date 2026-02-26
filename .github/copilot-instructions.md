@@ -74,19 +74,21 @@ The export pipeline is: `JMeterElement → JmxNode (intermediate) → String →
 ### Adding a new JMeter element
 Every new element requires these four pieces:
 1. **Model class** in `model/<category>/` extending `JMeterContainer` or `JMeterLeaf`
-2. **Builder class** in the same file extending `JMeterContainerBuilder` or `JMeterLeafBuilder`, with a top-level DSL function (e.g. `fun threadGroup(block: ThreadGroupBuilder.() -> Unit): ThreadGroup`)
+2. **Builder class** in the same file extending `JMeterContainerBuilder` or `JMeterLeafBuilder`, with a top-level DSL function (e.g. `fun threadGroup(block: ThreadGroupBuilder.() -> Unit): ThreadGroup`). Also add a DSL method to each **parent Builder** that can contain this element (e.g. add `fun threadGroup(...)` to `TestPlanBuilder`).
 3. **JMX extension function** in `jmx/<ElementName>Jmx.kt` — `fun ElementName.toJmxNode(): JmxElement`
 4. **Dispatch entry** in `JmxDispatch.kt` — add `is ElementName -> toJmxNode()` to the `when` block
 
 ### Builder DSL pattern
 ```kotlin
-// Consumers use nested lambdas; builders collect children via the inherited `children` list
-val plan = threadGroup {
-    numberOfThreads = 5
-    threadGroup { }  // nested element added to children
+// Consumers only need to import the top-level entry point (e.g. testPlan).
+// Nested DSL functions are methods on Builder classes, so no additional imports are needed.
+val plan = testPlan {
+    threadGroup {           // method on TestPlanBuilder
+        httpRequest { }     // method on ThreadGroupBuilder
+    }
 }
 ```
-Builders call `children.forEach { result.add(it) }` in `build()` to transfer collected children to the immutable model object.
+Builders call `children.forEach { result.add(it) }` in `doBuild()` to transfer collected children to the immutable model object.
 
 ### JMX property naming
 JMeter XML property names follow the convention `ClassName.propertyName` (e.g. `ThreadGroup.num_threads`). Match these exactly when writing `toJmxNode()` functions — cross-reference `testfile/test.jmx` or official JMeter source.
