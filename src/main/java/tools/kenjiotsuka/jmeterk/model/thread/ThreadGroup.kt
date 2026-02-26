@@ -3,6 +3,8 @@ package tools.kenjiotsuka.jmeterk.model.thread
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainerBuilder
 import tools.kenjiotsuka.jmeterk.model.core.JMeterElement
+import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
+import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequestBuilder
 import kotlin.concurrent.thread
 
 data class ThreadGroup(
@@ -20,11 +22,11 @@ data class ThreadGroup(
     override val enabled: Boolean
 ) : JMeterContainer(name, comment, enabled) {
     enum class ActionToBeTakenAfterSampleError {
-        Continue,
-        StartNextThreadLoop,
-        StopThread,
-        StopTest,
-        StopTestNow
+        CONTINUE,
+        START_NEXT_THREAD_LOOP,
+        STOP_THREAD,
+        STOP_TEST,
+        STOP_TEST_NOW
     }
 }
 
@@ -32,7 +34,7 @@ class ThreadGroupBuilder : JMeterContainerBuilder<ThreadGroup>() {
     override var name: String = "Thread Group"
 
     var actionToBeTakenAfterSampleError: ThreadGroup.ActionToBeTakenAfterSampleError =
-        ThreadGroup.ActionToBeTakenAfterSampleError.Continue
+        ThreadGroup.ActionToBeTakenAfterSampleError.CONTINUE
     var numberOfThreads: Int = 1
     /** Ramp-ip period in second */
     var rampUpPeriodTime: Int = 1
@@ -45,6 +47,10 @@ class ThreadGroupBuilder : JMeterContainerBuilder<ThreadGroup>() {
     var duration: Int? = null
     /** Start up delay in second */
     var startupDelay: Int? = null
+
+    fun httpRequest(block: HttpRequestBuilder.() -> Unit) {
+        add(HttpRequestBuilder().apply(block).build())
+    }
 
     override fun doBuild(): ThreadGroup {
         val tg = ThreadGroup(

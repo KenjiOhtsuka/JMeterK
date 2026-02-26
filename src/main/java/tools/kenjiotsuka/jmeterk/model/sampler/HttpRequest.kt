@@ -1,5 +1,9 @@
 package tools.kenjiotsuka.jmeterk.model.sampler
 
+import tools.kenjiotsuka.jmeterk.model.assertion.Jsr223Assertion
+import tools.kenjiotsuka.jmeterk.model.assertion.Jsr223AssertionBuilder
+import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
+import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertionBuilder
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainerBuilder
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest.File
@@ -135,8 +139,17 @@ class HttpRequestBuilder : JMeterContainerBuilder<HttpRequest>() {
     var bodyData: String = ""
     var filesUpload: MutableList<HttpRequest.File> = emptyList<HttpRequest.File>().toMutableList()
 
-    // ToDo: implement Advanced input elements in JMeter GUI
+    // ToDo: implement Advanced input fields in JMeter GUI
 
+    fun responseAssertion(block: ResponseAssertionBuilder.() -> Unit) {
+        add(ResponseAssertionBuilder().apply(block).build())
+    }
+
+    fun jsr223Assertion(block: Jsr223AssertionBuilder.() -> Unit) {
+        add(Jsr223AssertionBuilder().apply(block).build())
+    }
+
+    
     override fun doBuild(): HttpRequest {
         val hr = HttpRequest(
             name,

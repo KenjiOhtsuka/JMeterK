@@ -45,6 +45,11 @@ abstract class JMeterElementBuilder<T: JMeterElement>(
 
 abstract class JMeterContainerBuilder<T: JMeterContainer> : JMeterElementBuilder<T>() {
     var children: MutableList<JMeterElement> = mutableListOf()
+
+    fun anyElement(block: AnyElementBuilder.() -> Unit) {
+        add(AnyElementBuilder().apply(block).build())
+    }
+
     fun add(child: JMeterElement) {
         children.add(child)
     }

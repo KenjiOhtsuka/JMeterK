@@ -12,6 +12,10 @@ class TestPlan(
 class TestPlanBuilder : JMeterContainerBuilder<TestPlan>() {
     override var name: String = "Test Plan"
 
+    fun threadGroup(block: ThreadGroupBuilder.() -> Unit) {
+        add(ThreadGroupBuilder().apply(block).build())
+    }
+
     override fun doBuild(): TestPlan {
         val tp = TestPlan(
             name = name,
@@ -23,6 +27,6 @@ class TestPlanBuilder : JMeterContainerBuilder<TestPlan>() {
     }
 }
 
-fun testPlan(block: ThreadGroupBuilder.() -> Unit): JMeterContainer {
-    return ThreadGroupBuilder().apply(block).build()
+fun testPlan(block: TestPlanBuilder.() -> Unit): TestPlan {
+    return TestPlanBuilder().apply(block).build()
 }

@@ -42,7 +42,3 @@ class ConfigNodeBuilder {
 
     fun build(): ConfigNode = ConfigNode(tagName, attributes.toMap(), value, configNodes.toList())
 }
-
-fun anyNode(block: AnyElementBuilder.() -> Unit): AnyElement {
-    return AnyElementBuilder().apply(block).build()
-}

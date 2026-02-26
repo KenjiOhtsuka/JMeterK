@@ -4,11 +4,11 @@ import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroup
 
 fun ThreadGroup.toJmxNode(): JmxElement {
     val onError = when (actionToBeTakenAfterSampleError) {
-        ThreadGroup.ActionToBeTakenAfterSampleError.Continue           -> "continue"
-        ThreadGroup.ActionToBeTakenAfterSampleError.StartNextThreadLoop -> "startnextloop"
-        ThreadGroup.ActionToBeTakenAfterSampleError.StopThread          -> "stopthread"
-        ThreadGroup.ActionToBeTakenAfterSampleError.StopTest            -> "stoptest"
-        ThreadGroup.ActionToBeTakenAfterSampleError.StopTestNow         -> "stoptestnow"
+        ThreadGroup.ActionToBeTakenAfterSampleError.CONTINUE              -> "continue"
+        ThreadGroup.ActionToBeTakenAfterSampleError.START_NEXT_THREAD_LOOP -> "startnextloop"
+        ThreadGroup.ActionToBeTakenAfterSampleError.STOP_THREAD            -> "stopthread"
+        ThreadGroup.ActionToBeTakenAfterSampleError.STOP_TEST              -> "stoptest"
+        ThreadGroup.ActionToBeTakenAfterSampleError.STOP_TEST_NOW          -> "stoptestnow"
     }
 
     val loopController = elementProp(
