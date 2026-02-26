@@ -1,0 +1,196 @@
+# JMeterK
+
+A Kotlin DSL library for programmatically building [Apache JMeter](https://jmeter.apache.org/) test plans and serializing them to `.jmx` files.
+
+## Motivation
+
+JMeter test plans are stored as `.jmx` files — verbose XML that is difficult to read, review, and maintain. Editing them through the JMeter GUI makes it hard to:
+
+- **Track changes** — XML diffs are noisy and hard to understand at a glance
+- **Review** — Pull request reviews on raw `.jmx` files require deep familiarity with JMeter's XML structure
+- **Collaborate** — It is easy to accidentally overwrite a colleague's changes when multiple people edit the same GUI file
+
+JMeterK solves this by letting you define test plans in Kotlin code. The code is human-readable, diffable, and reviewable like any other source file, while the library handles generating the correct `.jmx` XML.
+
+## Features
+
+- Type-safe, readable DSL for constructing JMeter test plans
+- Produces valid `.jmx` files that can be opened and run in JMeter as-is
+- Covers common JMeter elements: `TestPlan`, `ThreadGroup`, `HTTPSamplerProxy`, `ResponseAssertion`, `JSR223Assertion`
+- Escape hatch via `AnyElement` for elements not yet supported by the typed model
+- Clean architecture: model layer is pure data; JMX serialization is isolated in a separate package
+
+## Requirements
+
+- JVM 21+
+- Kotlin 2.x
+
+## Quick Start
+
+```kotlin
+val plan = testPlan {
+    name = "My Test Plan"
+
+    threadGroup {
+        name = "Users"
+        numberOfThreads = 10
+        rampUpPeriodTime = 5
+
+        httpRequest {
+            name = "GET homepage"
+            serverNameOrIp = "example.com"
+            protocol = HttpRequest.Protocol.HTTPS
+            httpRequestMethod = HttpRequest.Method.GET
+            path = "/"
+
+            responseAssertion {
+                name = "Status 200"
+                fieldToTest = ResponseAssertion.FieldToTest.RESPONSE_CODE
+                matchingRule = ResponseAssertion.PatternMatchingRule.EQUALS
+                patterns.add("200")
+            }
+        }
+    }
+}
+
+// Serialize to XML string
+val xml: String = buildJmxDocument(plan)
+
+// Write to file
+File("my-test.jmx").writeText(xml)
+```
+
+## DSL Reference
+
+### TestPlan
+
+```kotlin
+testPlan {
+    name = "Test Plan"
+    functionalMode = false          // default
+    serializeThreadGroups = false   // default
+
+    threadGroup { ... }
+}
+```
+
+### ThreadGroup
+
+```kotlin
+threadGroup {
+    name = "Thread Group"
+    numberOfThreads = 10
+    rampUpPeriodTime = 5
+    loopCount = 1              // null = infinite
+    duration = 60              // seconds; only emitted when set
+    startupDelay = 0           // seconds; only emitted when set
+    sameUserOnEachIteration = false
+    actionToBeTakenAfterSampleError = ThreadGroup.ActionToBeTakenAfterSampleError.CONTINUE
+
+    httpRequest { ... }
+}
+```
+
+### HTTPSamplerProxy
+
+```kotlin
+httpRequest {
+    name = "HTTP Request"
+    protocol = HttpRequest.Protocol.HTTPS
+    serverNameOrIp = "example.com"
+    portNumber = 443            // optional
+    path = "/api/data"
+    httpRequestMethod = HttpRequest.Method.POST
+
+    // Body data mode
+    bodyData = """{"key":"value"}"""
+
+    // Parameters mode (mutually exclusive with bodyData)
+    parameters.add(HttpRequest.Parameter("key", "value"))
+
+    responseAssertion { ... }
+    jsr223Assertion { ... }
+}
+```
+
+### ResponseAssertion
+
+```kotlin
+responseAssertion {
+    name = "Response Assertion"
+    fieldToTest = ResponseAssertion.FieldToTest.TEXT_RESPONSE
+    matchingRule = ResponseAssertion.PatternMatchingRule.CONTAINS
+    not = false
+    or = false
+    ignoreStatus = false
+    patterns.addAll(listOf("expected string"))
+    customFailureMessage = ""
+}
+```
+
+**`FieldToTest` values:** `TEXT_RESPONSE`, `RESPONSE_CODE`, `RESPONSE_MESSAGE`, `RESPONSE_HEADERS`, `REQUEST_HEADERS`, `URL_SAMPLED`, `DOCUMENT_TEXT`, `REQUEST_DATA`
+
+**`PatternMatchingRule` values:** `CONTAINS`, `MATCHES`, `EQUALS`, `SUBSTRING`
+
+### JSR223Assertion
+
+```kotlin
+jsr223Assertion {
+    name = "JSR223 Assertion"
+    language = Jsr223Assertion.Language.GROOVY  // dropdown selection
+    // customLanguage = "kotlin"               // overrides language when set
+    script = "assert vars.get('token') != null"
+    parameters = ""
+    filename = ""
+    cacheCompiledScriptIfAvailable = true
+}
+```
+
+**`Language` values:** `BEAN_SHELL`, `GROOVY`, `JAVA`, `JAVASCRIPT`, `JEXL`, `JEXL2`, `JEXL3`, `NASHORN`
+
+### AnyElement (escape hatch)
+
+For JMeter elements not yet supported by a typed model class:
+
+```kotlin
+anyElement {
+    tagName = "TestAction"
+    name = "Flow Control Action"
+    attributes = mapOf(
+        "guiclass"  to "TestActionGui",
+        "testclass" to "TestAction",
+        "testname"  to "Flow Control Action"
+    )
+    configNode {
+        tagName = "intProp"
+        attributes = mapOf("name" to "ActionProcessor.action")
+        value = "1"
+    }
+}
+```
+
+## Building
+
+```bash
+# Build all modules
+./gradlew build
+
+# Run library tests
+./gradlew :library:test
+
+# Run sample application
+./gradlew :sample:run
+```
+
+## Project Structure
+
+```
+JMeterK/
+  library/   ← the JMeterK library
+  sample/    ← runnable usage example
+  testfile/  ← reference .jmx files
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
