@@ -9,7 +9,7 @@ fun AnyElement.toJmxNode(): JmxElement = JmxElement(
     children = buildList {
         addAll(configNodes.map { it.toJmxNode() })
         if (value != null) add(JmxText(value))
-        addAll(children.map { it.toJmxNode() })
+        // GUI children are handled by toJmxSubtree(), not placed inside the element tag
     }
 )
 

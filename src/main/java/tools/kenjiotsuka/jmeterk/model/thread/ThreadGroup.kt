@@ -52,24 +52,20 @@ class ThreadGroupBuilder : JMeterContainerBuilder<ThreadGroup>() {
         add(HttpRequestBuilder().apply(block).build())
     }
 
-    override fun doBuild(): ThreadGroup {
-        val tg = ThreadGroup(
-            name,
-            comment,
-            actionToBeTakenAfterSampleError,
-            numberOfThreads,
-            rampUpPeriodTime,
-            loopCount,
-            sameUserOnEachIteration,
-            delayThreadCreationUntilNeeded,
-            specifyThreadLifetime,
-            duration,
-            startupDelay,
-            enabled
-        )
-        children.forEach { tg.add(it) }
-        return tg
-    }
+    override fun doBuild(): ThreadGroup = ThreadGroup(
+        name,
+        comment,
+        actionToBeTakenAfterSampleError,
+        numberOfThreads,
+        rampUpPeriodTime,
+        loopCount,
+        sameUserOnEachIteration,
+        delayThreadCreationUntilNeeded,
+        specifyThreadLifetime,
+        duration,
+        startupDelay,
+        enabled
+    )
 }
 
 fun threadGroup(block: ThreadGroupBuilder.() -> Unit): ThreadGroup {

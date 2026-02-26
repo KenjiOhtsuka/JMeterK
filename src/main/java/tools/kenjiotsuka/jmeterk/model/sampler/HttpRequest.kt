@@ -150,30 +150,25 @@ class HttpRequestBuilder : JMeterContainerBuilder<HttpRequest>() {
     }
 
     
-    override fun doBuild(): HttpRequest {
-        val hr = HttpRequest(
-            name,
-            comment,
-            protocol,
-            serverNameOrIp,
-            portNumber,
-            httpRequestMethod,
-            path,
-            contentEncoding,
-            redirectAutomatically,
-            followRedirects,
-            useKeepAlive,
-            useMultipartFormData,
-            browserCompatibleHeaders,
-
-            parameters.toTypedArray(),
-            bodyData,
-            filesUpload.toTypedArray(),
-
-            enabled
-        )
-        return hr
-    }
+    override fun doBuild(): HttpRequest = HttpRequest(
+        name,
+        comment,
+        protocol,
+        serverNameOrIp,
+        portNumber,
+        httpRequestMethod,
+        path,
+        contentEncoding,
+        redirectAutomatically,
+        followRedirects,
+        useKeepAlive,
+        useMultipartFormData,
+        browserCompatibleHeaders,
+        parameters.toTypedArray(),
+        bodyData,
+        filesUpload.toTypedArray(),
+        enabled
+    )
 
     override fun validate(element: HttpRequest) {
         require(element.parameters.isEmpty() || element.bodyData.isEmpty()) {

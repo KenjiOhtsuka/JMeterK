@@ -10,6 +10,9 @@ data class JmxElement(
 
 data class JmxText(val text: String) : JmxNode()
 
+/** Represents a JMeter {@code <hashTree>} element containing sibling children. */
+data class JmxHashTree(val children: List<JmxNode> = emptyList()) : JmxNode()
+
 // Property helper functions
 fun stringProp(name: String, value: String): JmxElement =
     JmxElement("stringProp", mapOf("name" to name), listOf(JmxText(value)))
@@ -23,6 +26,26 @@ fun intProp(name: String, value: Int): JmxElement =
 fun longProp(name: String, value: Long): JmxElement =
     JmxElement("longProp", mapOf("name" to name), listOf(JmxText(value.toString())))
 
+fun elementProp(name: String, elementType: String, children: List<JmxNode>) = JmxElement(
+    "elementProp",
+    mapOf("name" to name, "elementType" to elementType),
+    children
+)
+
+/** elementProp with full JMeter GUI metadata but no {@code enabled} attribute (matches JMX format). */
+fun elementProp(
+    name: String, elementType: String, guiclass: String, testclass: String,
+    testname: String, children: List<JmxNode>
+) = JmxElement(
+    "elementProp",
+    mapOf(
+        "name" to name, "elementType" to elementType,
+        "guiclass" to guiclass, "testclass" to testclass, "testname" to testname,
+    ),
+    children
+)
+
+/** @deprecated Use the overload without [enabled]. */
 fun elementProp(
     name: String, elementType: String, guiclass: String, testclass: String,
     testname: String, enabled: Boolean, children: List<JmxNode>

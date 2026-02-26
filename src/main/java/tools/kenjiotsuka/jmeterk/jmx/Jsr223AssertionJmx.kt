@@ -4,17 +4,16 @@ import tools.kenjiotsuka.jmeterk.model.assertion.Jsr223Assertion
 
 fun Jsr223Assertion.toJmxNode(): JmxElement = JmxElement(
     tag = "JSR223Assertion",
-    attributes = mapOf(
-        "guiclass"  to "TestBeanGUI",
-        "testclass" to "JSR223Assertion",
-        "testname"  to name,
-        "enabled"   to enabled.toString()
-    ),
+    attributes = buildMap {
+        put("guiclass", "TestBeanGUI"); put("testclass", "JSR223Assertion"); put("testname", name)
+        if (!enabled) put("enabled", "false")
+    },
     children = listOf(
-        stringProp("scriptLanguage", scriptLanguage),
-        stringProp("parameters", parameters),
+        stringProp("cacheKey", cacheCompiledScriptIfAvailable.toString()),
         stringProp("filename", filename),
-        stringProp("cacheKey", cacheKey),
-        stringProp("script", script)
+        stringProp("parameters", parameters),
+        stringProp("script", script),
+        stringProp("scriptLanguage", customLanguage ?: language.scriptLanguage),
+        stringProp("TestPlan.comments", comment)
     )
 )

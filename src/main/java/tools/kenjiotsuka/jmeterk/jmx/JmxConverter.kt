@@ -2,8 +2,10 @@ package tools.kenjiotsuka.jmeterk.jmx
 
 class JmxConverter {
     fun convert(node: JmxNode): String = when (node) {
-        is JmxElement -> convertElement(node)
-        is JmxText    -> escape(node.text)
+        is JmxElement  -> convertElement(node)
+        is JmxText     -> escape(node.text)
+        is JmxHashTree -> if (node.children.isEmpty()) "<hashTree/>"
+                          else "<hashTree>${node.children.joinToString("") { convert(it) }}</hashTree>"
     }
 
     private fun convertElement(el: JmxElement): String {

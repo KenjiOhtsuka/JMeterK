@@ -21,13 +21,8 @@ class AnyElementBuilder : JMeterContainerBuilder<AnyElement>() {
         configNodes.add(ConfigNodeBuilder().apply(block).build())
     }
 
-    override fun doBuild(): AnyElement {
-        val ae = AnyElement(
-            name, comment, tagName, attributes.toMap(), value, configNodes.toList(), enabled
-        )
-        children.forEach { ae.add(it) }
-        return ae
-    }
+    override fun doBuild(): AnyElement =
+        AnyElement(name, comment, tagName, attributes.toMap(), value, configNodes.toList(), enabled)
 }
 
 class ConfigNodeBuilder {

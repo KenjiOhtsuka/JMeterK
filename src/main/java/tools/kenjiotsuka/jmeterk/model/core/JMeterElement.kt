@@ -32,7 +32,7 @@ abstract class JMeterElementBuilder<T: JMeterElement>(
 ) {
     abstract var name: String
 
-    fun build(): T {
+    open fun build(): T {
         val element = doBuild()
         validate(element)
         return element
@@ -45,6 +45,17 @@ abstract class JMeterElementBuilder<T: JMeterElement>(
 
 abstract class JMeterContainerBuilder<T: JMeterContainer> : JMeterElementBuilder<T>() {
     var children: MutableList<JMeterElement> = mutableListOf()
+
+    /**
+     * Overrides [build] to wire collected [children] into the built element automatically.
+     * Children are added after [doBuild] and before [validate], so validators can inspect them.
+     */
+    final override fun build(): T {
+        val element = doBuild()
+        children.forEach { element.add(it) }
+        validate(element)
+        return element
+    }
 
     fun anyElement(block: AnyElementBuilder.() -> Unit) {
         add(AnyElementBuilder().apply(block).build())
