@@ -21,7 +21,6 @@ kotlin {
 publishing {
     publications {
         create<MavenPublication>("library") {
-            artifactId = "jmeterk"
             from(components["java"])
         }
     }

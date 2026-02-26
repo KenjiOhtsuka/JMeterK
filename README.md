@@ -41,11 +41,11 @@ dependencyResolutionManagement {
 
 // build.gradle.kts
 dependencies {
-    implementation("com.github.KenjiOhtsuka:JMeterK:Tag")
+    implementation("com.github.KenjiOhtsuka.JMeterK:library:Tag")
 }
 ```
 
-Replace `Tag` with the desired release tag (e.g. `0.1.0`). See [releases](../../releases).
+Replace `Tag` with the desired release tag (e.g. `0.1.1`). See [releases](../../releases).
 
 ## Quick Start
 
@@ -210,7 +210,6 @@ anyElement {
 JMeterK/
   library/   ← the JMeterK library
   sample/    ← runnable usage example
-  testfile/  ← reference .jmx files
 ```
 
 ## License
