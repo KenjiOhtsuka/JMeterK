@@ -10,4 +10,7 @@ interface AssertionsDsl {
 
     fun jsr223Assertion(block: Jsr223AssertionBuilder.() -> Unit) =
         add(Jsr223AssertionBuilder().apply(block).build())
+
+    fun jsonAssertion(block: JsonAssertionBuilder.() -> Unit) =
+        add(JsonAssertionBuilder().apply(block).build())
 }

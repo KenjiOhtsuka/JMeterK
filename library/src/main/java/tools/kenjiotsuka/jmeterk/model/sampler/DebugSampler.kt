@@ -1,7 +1,8 @@
 package tools.kenjiotsuka.jmeterk.model.sampler
 
-import tools.kenjiotsuka.jmeterk.model.core.JMeterLeaf
-import tools.kenjiotsuka.jmeterk.model.core.JMeterLeafBuilder
+import tools.kenjiotsuka.jmeterk.model.assertion.AssertionsDsl
+import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
+import tools.kenjiotsuka.jmeterk.model.core.JMeterContainerBuilder
 
 data class DebugSampler(
     override val name: String,
@@ -13,9 +14,9 @@ data class DebugSampler(
     /** Display system properties in the sample result. */
     val displaySystemProperties: Boolean,
     override val enabled: Boolean
-) : JMeterLeaf(name, comment, enabled)
+) : JMeterContainer(name, comment, enabled)
 
-class DebugSamplerBuilder : JMeterLeafBuilder<DebugSampler>() {
+class DebugSamplerBuilder : JMeterContainerBuilder<DebugSampler>(), AssertionsDsl {
     override var name: String = "Debug Sampler"
     /** Show JMeter properties (e.g. jmeter.version) in results. Default: false. */
     var displayJMeterProperties: Boolean = false

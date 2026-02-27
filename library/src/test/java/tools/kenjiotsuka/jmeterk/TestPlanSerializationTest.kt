@@ -147,6 +147,16 @@ class TestPlanSerializationTest {
                 debugSampler {
                     name = "Debug Sampler"
                     displayJMeterVariables = true
+
+                    jsonAssertion {
+                        name = "JSON Assertion"
+                        // jsonPath = "" (default)
+                        expectedValue = "ｆ\n\nｆｒ"
+                        // additionallyAssertValue = false (default)
+                        expectNull = true
+                        // invertAssertion = false (default)
+                        // matchAsRegularExpression = true (default)
+                    }
                 }
             }
 
