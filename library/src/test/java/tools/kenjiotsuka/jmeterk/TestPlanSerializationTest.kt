@@ -114,9 +114,25 @@ class TestPlanSerializationTest {
 
                 ifController {
                     name = "If Controller"
-                    condition = "\${JMeterThread.last_sample_ok}\n\n\${JMeterThread.last_sample_ok}\n\n\${JMeterThread.last_sample_ok}"
+                    condition =
+                        $$"${JMeterThread.last_sample_ok}\n\n${JMeterThread.last_sample_ok}\n\n${JMeterThread.last_sample_ok}"
                     evaluateAll = true
                     useExpression = true
+
+                    whileController {
+                        name = "While Controller"
+                        // condition = "" (default, empty)
+                    }
+                }
+
+                loopController {
+                    name = "Loop Controller"
+                    loopCount = null // infinite (loops = -1, continue_forever omitted)
+
+                    whileController {
+                        name = "While Controller"
+                        condition = "1\n\n2\n\n3"
+                    }
                 }
             }
 
@@ -127,6 +143,11 @@ class TestPlanSerializationTest {
                 sameUserOnEachIteration = true
                 // duration = null → not emitted
                 // startupDelay = null → not emitted
+
+                debugSampler {
+                    name = "Debug Sampler"
+                    displayJMeterVariables = true
+                }
             }
 
             openModelThreadGroup {

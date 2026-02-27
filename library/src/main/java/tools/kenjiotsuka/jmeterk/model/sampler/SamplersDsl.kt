@@ -7,4 +7,7 @@ interface SamplersDsl {
 
     fun httpRequest(block: HttpRequestBuilder.() -> Unit) =
         add(HttpRequestBuilder().apply(block).build())
+
+    fun debugSampler(block: DebugSamplerBuilder.() -> Unit) =
+        add(DebugSamplerBuilder().apply(block).build())
 }

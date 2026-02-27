@@ -17,8 +17,8 @@ fun TestPlan.toJmxNode(): JmxElement {
         attributes = attrs,
         children = buildList {
             add(userDefinedVars)
-            if (functionalMode) add(boolProp("TestPlan.functional_mode", true))
-            if (serializeThreadGroups) add(boolProp("TestPlan.serialize_threadgroups", true))
+            add(boolProp("TestPlan.functional_mode", functionalMode))
+            add(boolProp("TestPlan.serialize_threadgroups", serializeThreadGroups))
         }
     )
 }

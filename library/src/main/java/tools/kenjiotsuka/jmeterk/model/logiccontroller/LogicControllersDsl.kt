@@ -7,4 +7,10 @@ interface LogicControllersDsl {
 
     fun ifController(block: IfControllerBuilder.() -> Unit) =
         add(IfControllerBuilder().apply(block).build())
+
+    fun loopController(block: LoopControllerBuilder.() -> Unit) =
+        add(LoopControllerBuilder().apply(block).build())
+
+    fun whileController(block: WhileControllerBuilder.() -> Unit) =
+        add(WhileControllerBuilder().apply(block).build())
 }

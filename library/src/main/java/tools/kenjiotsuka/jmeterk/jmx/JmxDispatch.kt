@@ -8,6 +8,9 @@ import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
 import tools.kenjiotsuka.jmeterk.model.core.JMeterElement
 import tools.kenjiotsuka.jmeterk.model.core.TestPlan
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.IfController
+import tools.kenjiotsuka.jmeterk.model.logiccontroller.LoopController
+import tools.kenjiotsuka.jmeterk.model.logiccontroller.WhileController
+import tools.kenjiotsuka.jmeterk.model.sampler.DebugSampler
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
 import tools.kenjiotsuka.jmeterk.model.thread.OpenModelThreadGroup
 import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroup
@@ -20,10 +23,13 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     is OpenModelThreadGroup   -> toJmxNode()
     // Samplers
     is HttpRequest      -> toJmxNode()
+    is DebugSampler     -> toJmxNode()
     // Config Element
     is HttpHeaderManager -> toJmxNode()
     // Logic Controllers
     is IfController     -> toJmxNode()
+    is LoopController   -> toJmxNode()
+    is WhileController  -> toJmxNode()
 
     // Listener
 
