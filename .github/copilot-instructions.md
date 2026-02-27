@@ -55,11 +55,14 @@ The codebase has two layers:
   - `JMeterElementBuilder` / `JMeterContainerBuilder` / `JMeterLeafBuilder` → corresponding builder base classes
 - Each element type lives in a sub-package matching its JMeter category:
   - `model/core/` — `TestPlan`, `AnyElement`
+  - `model/jsr223/` — `Jsr223Language`, `AbstractJsr223LeafBuilder` (shared JSR223 infrastructure; not a JMeter GUI category)
   - `model/thread/` — `ThreadGroup`, `OpenModelThreadGroup`, `AbstractThreadGroupBuilder`, `ThreadsDsl`, `ActionToBeTakenAfterSampleError`
-  - `model/sampler/` — `HttpRequest`, `SamplersDsl`
-  - `model/assertion/` — `ResponseAssertion`, `Jsr223Assertion`, `AssertionsDsl`
+  - `model/sampler/` — `HttpRequest`, `DebugSampler`, `FlowControlAction`, `Jsr223Sampler`, `SamplersDsl`
+  - `model/assertion/` — `ResponseAssertion`, `Jsr223Assertion`, `JsonAssertion`, `SizeAssertion`, `XPath2Assertion`, `ApplyTo`, `AssertionsDsl`
   - `model/configelement/` — `HttpHeaderManager`, `ConfigElementsDsl`
-  - `model/logiccontroller/` — `IfController`, `AbstractLogicControllerBuilder`, `LogicControllersDsl`
+  - `model/logiccontroller/` — `IfController`, `LoopController`, `WhileController`, `TransactionController`, `AbstractLogicControllerBuilder`, `LogicControllersDsl`
+  - `model/preprocessor/` — `Jsr223PreProcessor`, `PreProcessorsDsl`
+  - `model/postprocessor/` — `Jsr223PostProcessor`, `PostProcessorsDsl`
   - Empty packages exist for future elements: `listener/`, `nontestelement/`, `postprocessor/`, `preprocessors/`, `testfragment/`, `timer/`
 
 The directory structure and classnames are based on JMeter GUI.
@@ -78,8 +81,8 @@ To constrain which elements can be added where (mirroring JMeter's `getMenuCateg
 Each interface declares `fun add(child: JMeterElement)` as abstract (already implemented by `JMeterContainerBuilder`) and provides default DSL functions that call `add()`.
 
 Per-category **abstract builder classes** implement the appropriate interfaces and serve as the base for concrete builders:
-- `AbstractThreadGroupBuilder<T>` (`model/thread/`) — implements all 4 execution-context DSL interfaces; used by `ThreadGroupBuilder`, `OpenModelThreadGroupBuilder`
-- `AbstractLogicControllerBuilder<T>` (`model/logiccontroller/`) — same interfaces; used by `IfControllerBuilder`
+- `AbstractThreadGroupBuilder<T>` (`model/thread/`) — implements `LogicControllersDsl`, `SamplersDsl`, `ConfigElementsDsl`, `AssertionsDsl`, `PreProcessorsDsl`, `PostProcessorsDsl`; used by `ThreadGroupBuilder`, `OpenModelThreadGroupBuilder`
+- `AbstractLogicControllerBuilder<T>` (`model/logiccontroller/`) — same 6 interfaces; used by `IfControllerBuilder`, `LoopControllerBuilder`, `WhileControllerBuilder`
 
 `TestPlanBuilder` implements `ThreadsDsl` only (test plans cannot directly contain samplers or logic controllers).
 `HttpRequestBuilder` implements `AssertionsDsl` and `ConfigElementsDsl` directly.
@@ -88,7 +91,21 @@ Per-category **abstract builder classes** implement the appropriate interfaces a
 
 Top-level enum in `model/thread/ActionToBeTakenAfterSampleError.kt`. Shared by `ThreadGroup` and `OpenModelThreadGroup`. Values: `CONTINUE`, `START_NEXT_THREAD_LOOP`, `STOP_THREAD`, `STOP_TEST`, `STOP_TEST_NOW`.
 
+#### `Jsr223Language`
 
+Top-level enum in `model/jsr223/Jsr223Language.kt`. Shared by all 4 JSR223 elements (`Jsr223Assertion`, `Jsr223PreProcessor`, `Jsr223PostProcessor`, `Jsr223Sampler`). Use `Jsr223Language.GROOVY` etc. — **not** `Jsr223Assertion.Language.GROOVY` (inner enum removed).
+
+#### `AbstractJsr223LeafBuilder`
+
+Abstract builder in `model/jsr223/AbstractJsr223LeafBuilder.kt`. Shared base for `Jsr223AssertionBuilder`, `Jsr223PreProcessorBuilder`, `Jsr223PostProcessorBuilder`. Contains shared fields: `language`, `customLanguage`, `script`, `filename`, `parameters`, `cacheCompiledScriptIfAvailable`. `Jsr223SamplerBuilder` is a `JMeterContainerBuilder` and repeats these fields directly (too few to warrant a parallel abstract container builder).
+
+#### `ApplyTo` enum
+
+Top-level enum in `model/assertion/ApplyTo.kt`. Shared by `SizeAssertion` and `XPath2Assertion`. JMX scope serialization: `MAIN_SAMPLE_ONLY` → omit `Assertion.scope`; `MAIN_SAMPLE_AND_SUB_SAMPLES` → `"all"`; `SUB_SAMPLES_ONLY` → `"children"`; `JMETER_VARIABLE` → `"variable"` + `Scope.variable`.
+
+#### JSR223 JMX serialization helper
+
+`jmx/Jsr223SharedJmx.kt` contains `internal fun jsr223ScriptChildren(...)` — a shared helper for all 4 JSR223 elements. It only emits `TestPlan.comments` when non-empty.
 
 Model field names follow the **JMeter GUI label** (e.g. `ignoreStatus`, `cacheCompiledScriptIfAvailable`). The serialization layer in `jmx/` maps these to the JMX XML attribute names (e.g. `Assertion.assume_success`, `cacheKey`). This separation keeps the DSL readable while producing spec-correct JMX output.
 
@@ -170,7 +187,7 @@ val plan = testPlan {
 }
 ```
 
-`JMeterContainerBuilder.build()` automatically wires `children` into the built element after `doBuild()` and before `validate()`. Subclass `doBuild()` implementations must **not** call `children.forEach { element.add(it) }` — this is done by the base class.
+`JMeterContainerBuilder.build()` automatically wires `children` into the built element after `doBuild()` and before `checkBuilt()`. Subclass `doBuild()` implementations must **not** call `children.forEach { element.add(it) }` — this is done by the base class.
 
 ### JMX property naming
 JMeter XML property names follow the convention `ClassName.propertyName` (e.g. `ThreadGroup.num_threads`). Match these exactly when writing `toJmxNode()` functions — cross-reference `testfile/test.jmx` or official JMeter source.

@@ -1,38 +1,38 @@
-package tools.kenjiotsuka.jmeterk.model.assertion
+package tools.kenjiotsuka.jmeterk.model.postprocessor
 
 import tools.kenjiotsuka.jmeterk.model.core.JMeterLeaf
 import tools.kenjiotsuka.jmeterk.model.jsr223.AbstractJsr223LeafBuilder
 import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223Language
 import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223ScriptElement
 
-data class Jsr223Assertion(
+data class Jsr223PostProcessor(
     override val name: String,
     override val comment: String,
-    /**
-     * Scripting language selected from the dropdown.
-     * Ignored when [customLanguage] is set.
-     */
+    /** Scripting language. Ignored when [customLanguage] is set. */
     override val language: Jsr223Language,
     /**
-     * Custom scripting language string typed in the text field.
+     * Custom scripting language typed in the GUI text field.
      * When non-null, takes precedence over [language] in JMX output.
      */
     override val customLanguage: String?,
-    /** Inline script to execute. Ignored if filename is set. */
+    /**
+     * Inline script to execute (GUI: script text area).
+     * Variables available: ctx, vars, props, prev, sampler, log, Label, Filename, Parameters, args, OUT.
+     */
     override val script: String,
-    /** Path to an external script file. Takes precedence over script. */
+    /** Path to an external script file. Takes precedence over [script]. */
     override val filename: String,
     /** Parameters passed to the script as the variable `Parameters`. */
     override val parameters: String,
-    /** Corresponds to "Cache compiled script if available" checkbox in the JMeter GUI. */
+    /** GUI: "Cache compiled script if available" checkbox. Default: true. */
     override val cacheCompiledScriptIfAvailable: Boolean,
     override val enabled: Boolean
 ) : JMeterLeaf(name, comment, enabled), Jsr223ScriptElement
 
-class Jsr223AssertionBuilder : AbstractJsr223LeafBuilder<Jsr223Assertion>() {
-    override var name: String = "JSR223 Assertion"
+class Jsr223PostProcessorBuilder : AbstractJsr223LeafBuilder<Jsr223PostProcessor>() {
+    override var name: String = "JSR223 PostProcessor"
 
-    override fun doBuild(): Jsr223Assertion = Jsr223Assertion(
+    override fun doBuild(): Jsr223PostProcessor = Jsr223PostProcessor(
         name = name,
         comment = comment,
         language = language,
@@ -44,4 +44,3 @@ class Jsr223AssertionBuilder : AbstractJsr223LeafBuilder<Jsr223Assertion>() {
         enabled = enabled
     )
 }
-

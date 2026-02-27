@@ -8,12 +8,5 @@ fun Jsr223Assertion.toJmxNode(): JmxElement = JmxElement(
         put("guiclass", "TestBeanGUI"); put("testclass", "JSR223Assertion"); put("testname", name)
         if (!enabled) put("enabled", "false")
     },
-    children = listOf(
-        stringProp("cacheKey", cacheCompiledScriptIfAvailable.toString()),
-        stringProp("filename", filename),
-        stringProp("parameters", parameters),
-        stringProp("script", script),
-        stringProp("scriptLanguage", customLanguage ?: language.scriptLanguage),
-        stringProp("TestPlan.comments", comment)
-    )
+    children = jsr223ScriptChildren()
 )

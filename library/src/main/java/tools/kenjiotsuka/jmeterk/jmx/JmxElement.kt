@@ -45,7 +45,7 @@ fun elementProp(
     children
 )
 
-/** @deprecated Use the overload without [enabled]. */
+@Deprecated("Use the overload without [enabled].")
 fun elementProp(
     name: String, elementType: String, guiclass: String, testclass: String,
     testname: String, enabled: Boolean, children: List<JmxNode>

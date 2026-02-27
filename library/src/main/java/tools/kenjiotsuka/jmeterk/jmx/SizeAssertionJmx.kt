@@ -1,5 +1,6 @@
 package tools.kenjiotsuka.jmeterk.jmx
 
+import tools.kenjiotsuka.jmeterk.model.assertion.ApplyTo
 import tools.kenjiotsuka.jmeterk.model.assertion.SizeAssertion
 
 fun SizeAssertion.toJmxNode(): JmxElement {
@@ -24,15 +25,15 @@ fun SizeAssertion.toJmxNode(): JmxElement {
             add(stringProp("SizeAssertion.size", sizeValue?.toString() ?: ""))
             add(intProp("SizeAssertion.operator", comparisonOperator.jmxValue))
             when (applyTo) {
-                SizeAssertion.ApplyTo.MAIN_SAMPLE_AND_SUB_SAMPLES ->
+                ApplyTo.MAIN_SAMPLE_AND_SUB_SAMPLES ->
                     add(stringProp("Assertion.scope", "all"))
-                SizeAssertion.ApplyTo.SUB_SAMPLES_ONLY ->
+                ApplyTo.SUB_SAMPLES_ONLY ->
                     add(stringProp("Assertion.scope", "children"))
-                SizeAssertion.ApplyTo.JMETER_VARIABLE -> {
+                ApplyTo.JMETER_VARIABLE -> {
                     add(stringProp("Assertion.scope", "variable"))
                     add(stringProp("Scope.variable", jmeterVariableName))
                 }
-                SizeAssertion.ApplyTo.MAIN_SAMPLE_ONLY -> { /* default — Assertion.scope not emitted */ }
+                ApplyTo.MAIN_SAMPLE_ONLY -> { /* default — Assertion.scope not emitted */ }
             }
         }
     )

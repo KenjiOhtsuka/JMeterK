@@ -4,6 +4,7 @@ import tools.kenjiotsuka.jmeterk.model.assertion.Jsr223Assertion
 import tools.kenjiotsuka.jmeterk.model.assertion.JsonAssertion
 import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
 import tools.kenjiotsuka.jmeterk.model.assertion.SizeAssertion
+import tools.kenjiotsuka.jmeterk.model.assertion.XPath2Assertion
 import tools.kenjiotsuka.jmeterk.model.configelement.HttpHeaderManager
 import tools.kenjiotsuka.jmeterk.model.core.AnyElement
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
@@ -13,9 +14,12 @@ import tools.kenjiotsuka.jmeterk.model.logiccontroller.IfController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.LoopController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.TransactionController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.WhileController
+import tools.kenjiotsuka.jmeterk.model.postprocessor.Jsr223PostProcessor
+import tools.kenjiotsuka.jmeterk.model.preprocessor.Jsr223PreProcessor
 import tools.kenjiotsuka.jmeterk.model.sampler.DebugSampler
 import tools.kenjiotsuka.jmeterk.model.sampler.FlowControlAction
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
+import tools.kenjiotsuka.jmeterk.model.sampler.Jsr223Sampler
 import tools.kenjiotsuka.jmeterk.model.thread.OpenModelThreadGroup
 import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroup
 
@@ -26,9 +30,14 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     is ThreadGroup            -> toJmxNode()
     is OpenModelThreadGroup   -> toJmxNode()
     // Samplers
-    is HttpRequest      -> toJmxNode()
-    is DebugSampler     -> toJmxNode()
+    is HttpRequest       -> toJmxNode()
+    is DebugSampler      -> toJmxNode()
     is FlowControlAction -> toJmxNode()
+    is Jsr223Sampler     -> toJmxNode()
+    // Pre Processors
+    is Jsr223PreProcessor  -> toJmxNode()
+    // Post Processors
+    is Jsr223PostProcessor -> toJmxNode()
     // Config Element
     is HttpHeaderManager -> toJmxNode()
     // Logic Controllers
@@ -41,15 +50,12 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
 
     // Timer
 
-    // Pre Processors
-
-    // Post Processors
-
     // Assertions
     is ResponseAssertion -> toJmxNode()
     is Jsr223Assertion   -> toJmxNode()
     is JsonAssertion     -> toJmxNode()
     is SizeAssertion     -> toJmxNode()
+    is XPath2Assertion   -> toJmxNode()
 
     // Test Fragment
 
@@ -68,11 +74,13 @@ fun JMeterElement.toJmxSubtree(): List<JmxNode> {
     return listOf(element, JmxHashTree(childNodes))
 }
 
+private const val JMETER_VERSION = "5.6.3"
+
 /** Serializes a [TestPlan] to a complete JMX XML document string including the XML declaration. */
 fun buildJmxDocument(plan: TestPlan): String {
     val root = JmxElement(
         "jmeterTestPlan",
-        mapOf("version" to "1.2", "properties" to "5.0", "jmeter" to "5.6.3"),
+        mapOf("version" to "1.2", "properties" to "5.0", "jmeter" to JMETER_VERSION),
         listOf(JmxHashTree(plan.toJmxSubtree()))
     )
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n${JmxConverter().convert(root)}"

@@ -20,7 +20,7 @@ val getHomepageRequest: HttpRequestBuilder.() -> Unit = {
     responseAssertion {
         name = "Status 200"
         fieldToTest = ResponseAssertion.FieldToTest.RESPONSE_CODE
-        matchingRule = ResponseAssertion.PatternMatchingRule.EQUALS
+        patternMatchingRule = ResponseAssertion.PatternMatchingRule.EQUALS
         patterns.add("200")
     }
 }

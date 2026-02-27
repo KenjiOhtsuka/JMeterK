@@ -32,13 +32,13 @@ abstract class JMeterElementBuilder<T: JMeterElement>(
 
     open fun build(): T {
         val element = doBuild()
-        validate(element)
+        checkBuilt(element)
         return element
     }
 
     protected abstract fun doBuild(): T
 
-    protected open fun validate(element: T) {}
+    protected open fun checkBuilt(element: T) {}
 }
 
 abstract class JMeterContainerBuilder<T: JMeterContainer> : JMeterElementBuilder<T>() {
@@ -51,10 +51,17 @@ abstract class JMeterContainerBuilder<T: JMeterContainer> : JMeterElementBuilder
     final override fun build(): T {
         val element = doBuild()
         children.forEach { element.add(it) }
-        validate(element)
+        checkBuilt(element)
         return element
     }
 
+    /**
+     * Adds an [AnyElement] child using a raw XML structure.
+     *
+     * This is an intentional escape hatch that bypasses the category DSL constraints
+     * (e.g. [TestPlanBuilder] normally only exposes [ThreadsDsl]). Use it to add JMeter elements
+     * that do not yet have a typed model class, or in tests that need arbitrary nesting.
+     */
     fun anyElement(block: AnyElementBuilder.() -> Unit) {
         add(AnyElementBuilder().apply(block).build())
     }

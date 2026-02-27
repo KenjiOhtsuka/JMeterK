@@ -6,7 +6,7 @@ import tools.kenjiotsuka.jmeterk.model.core.JMeterLeafBuilder
 data class HttpHeaderManager(
     override val name: String,
     override val comment: String,
-    val headers: Array<Header>,
+    val headers: List<Header>,
     override val enabled: Boolean
 ) : JMeterLeaf(name, comment, enabled) {
 
@@ -28,7 +28,7 @@ class HttpHeaderManagerBuilder : JMeterLeafBuilder<HttpHeaderManager>() {
     override fun doBuild(): HttpHeaderManager = HttpHeaderManager(
         name = name,
         comment = comment,
-        headers = headers.toTypedArray(),
+        headers = headers.toList(),
         enabled = enabled
     )
 }

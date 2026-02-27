@@ -18,7 +18,13 @@ JMeterK solves this by letting you define test plans in Kotlin code. The code is
 
 - Type-safe, readable DSL for constructing JMeter test plans
 - Produces valid `.jmx` files that can be opened and run in JMeter as-is
-- Covers common JMeter elements: `TestPlan`, `ThreadGroup`, `OpenModelThreadGroup`, `HTTPSamplerProxy`, `ResponseAssertion`, `JSR223Assertion`, `HttpHeaderManager`, `IfController`
+- Covers a wide range of JMeter elements:
+  - **Threads**: `ThreadGroup`, `OpenModelThreadGroup`
+  - **Samplers**: `HTTPSamplerProxy`, `DebugSampler`, `JSR223Sampler`, `TestAction` (FlowControlAction)
+  - **Logic Controllers**: `IfController`, `LoopController`, `WhileController`, `TransactionController`
+  - **Assertions**: `ResponseAssertion`, `JSR223Assertion`, `JSONPathAssertion`, `SizeAssertion`, `XPath2Assertion`
+  - **Config Elements**: `HttpHeaderManager`
+  - **Pre/Post Processors**: `JSR223PreProcessor`, `JSR223PostProcessor`
 - **Split across files** — define thread groups and requests in separate files; compose them in `testPlan {}`
 - **Share and reuse** — extract common request definitions (e.g. `val loginRequest: HttpRequestBuilder.() -> Unit`) and use them across multiple thread groups
 - Escape hatch via `AnyElement` for elements not yet supported by the typed model
@@ -163,8 +169,8 @@ responseAssertion {
 ```kotlin
 jsr223Assertion {
     name = "JSR223 Assertion"
-    language = Jsr223Assertion.Language.GROOVY  // dropdown selection
-    // customLanguage = "kotlin"               // overrides language when set
+    language = Jsr223Language.GROOVY  // dropdown selection; import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223Language
+    // customLanguage = "kotlin"       // overrides language when set
     script = "assert vars.get('token') != null"
     parameters = ""
     filename = ""
@@ -172,7 +178,7 @@ jsr223Assertion {
 }
 ```
 
-**`Language` values:** `BEAN_SHELL`, `GROOVY`, `JAVA`, `JAVASCRIPT`, `JEXL`, `JEXL2`, `JEXL3`, `NASHORN`
+**`Jsr223Language` values:** `BEAN_SHELL`, `GROOVY`, `JAVA`, `JAVASCRIPT`, `JEXL`, `JEXL2`, `JEXL3`, `NASHORN`
 
 ### OpenModelThreadGroup
 
@@ -216,20 +222,22 @@ For JMeter elements not yet supported by a typed model class:
 
 ```kotlin
 anyElement {
-    tagName = "TestAction"
-    name = "Flow Control Action"
+    tagName = "GenericElement"
+    name = "My Element"
     attributes = mapOf(
-        "guiclass"  to "TestActionGui",
-        "testclass" to "TestAction",
-        "testname"  to "Flow Control Action"
+        "guiclass"  to "GenericElementGui",
+        "testclass" to "GenericElement",
+        "testname"  to "My Element"
     )
     configNode {
-        tagName = "intProp"
-        attributes = mapOf("name" to "ActionProcessor.action")
-        value = "1"
+        tagName = "stringProp"
+        attributes = mapOf("name" to "GenericElement.property")
+        value = "value"
     }
 }
 ```
+
+> **Tip:** once a typed DSL class is available (e.g. `flowControlAction {}`), prefer it over `anyElement`.
 
 ## Building
 

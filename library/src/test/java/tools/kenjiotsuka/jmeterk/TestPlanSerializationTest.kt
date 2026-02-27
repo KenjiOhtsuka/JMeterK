@@ -8,8 +8,10 @@ import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
 import tools.kenjiotsuka.jmeterk.model.configelement.HttpHeaderManagerBuilder
 import tools.kenjiotsuka.jmeterk.model.core.ConfigNode
 import tools.kenjiotsuka.jmeterk.model.core.testPlan
-import tools.kenjiotsuka.jmeterk.model.thread.ActionToBeTakenAfterSampleError
+import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223Language
+import tools.kenjiotsuka.jmeterk.model.sampler.FlowControlAction
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
+import tools.kenjiotsuka.jmeterk.model.thread.ActionToBeTakenAfterSampleError
 
 class TestPlanSerializationTest {
 
@@ -72,7 +74,7 @@ class TestPlanSerializationTest {
                         name = "Response Assertion !!!"
                         // enabled = true (default)
                         fieldToTest = ResponseAssertion.FieldToTest.TEXT_RESPONSE
-                        matchingRule = ResponseAssertion.PatternMatchingRule.SUBSTRING
+                        patternMatchingRule = ResponseAssertion.PatternMatchingRule.SUBSTRING
                         not = false
                         or = true   // SUBSTRING(16) + OR(32) = test_type 48
                         patterns.addAll(listOf("oo", "ll"))
@@ -82,7 +84,7 @@ class TestPlanSerializationTest {
                     jsr223Assertion {
                         name = "JSR223 Assertion !!!"
                         comment = "hello"
-                        language = Jsr223Assertion.Language.GROOVY
+                        language = Jsr223Language.GROOVY
                         parameters = "a"
                         cacheCompiledScriptIfAvailable = true
                         // script = "" (default)
@@ -164,12 +166,27 @@ class TestPlanSerializationTest {
                         // size = null → empty string (default)
                         // comparisonOperator = EQUAL (default)
                     }
+
+                    xpath2Assertion {
+                        name = "XPath2 Assertion"
+                        xPath = "/aaaaerriivmo///"
+                        // invertAssertion = false (default)
+                        // namespacesAliasesList = "" (default)
+                        // applyTo = MAIN_SAMPLE_ONLY (default)
+                    }
                 }
 
                 transactionController {
                     name = "Transaction Controller"
                     // generateParentSample = false → not emitted (default)
                     // includeTimers = false (default, always emitted)
+                }
+
+                flowControlAction {
+                    name = "Flow Control Action"
+                    action = FlowControlAction.Action.GO_TO_NEXT_ITERATION_OF_CURRENT_LOOP
+                    // target = CURRENT_THREAD (default)
+                    // duration = 0 (default)
                 }
             }
 
@@ -178,6 +195,22 @@ class TestPlanSerializationTest {
                 schedule = "rate(1/min) random_arrivals(10 min) /* comment */"
                 randomSeed = 5678L
                 actionToBeTakenAfterSampleError = ActionToBeTakenAfterSampleError.STOP_TEST_NOW
+
+                jsr223PreProcessor {
+                    name = "JSR223 PreProcessor"
+                    // language = GROOVY (default)
+                    // all other fields default (empty/true)
+                }
+
+                jsr223Sampler {
+                    name = "JSR223 Sampler"
+                    // language = GROOVY (default)
+                }
+
+                jsr223PostProcessor {
+                    name = "JSR223 PostProcessor"
+                    // language = GROOVY (default)
+                }
             }
         }
 

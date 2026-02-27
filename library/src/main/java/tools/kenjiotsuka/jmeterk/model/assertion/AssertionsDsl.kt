@@ -16,4 +16,6 @@ interface AssertionsDsl {
 
     fun sizeAssertion(block: SizeAssertionBuilder.() -> Unit) =
         add(SizeAssertionBuilder().apply(block).build())
+    fun xpath2Assertion(block: XPath2AssertionBuilder.() -> Unit) =
+        add(XPath2AssertionBuilder().apply(block).build())
 }

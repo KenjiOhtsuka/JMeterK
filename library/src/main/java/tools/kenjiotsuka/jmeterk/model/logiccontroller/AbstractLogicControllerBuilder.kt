@@ -4,6 +4,8 @@ import tools.kenjiotsuka.jmeterk.model.assertion.AssertionsDsl
 import tools.kenjiotsuka.jmeterk.model.configelement.ConfigElementsDsl
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainerBuilder
+import tools.kenjiotsuka.jmeterk.model.postprocessor.PostProcessorsDsl
+import tools.kenjiotsuka.jmeterk.model.preprocessor.PreProcessorsDsl
 import tools.kenjiotsuka.jmeterk.model.sampler.SamplersDsl
 
 abstract class AbstractLogicControllerBuilder<T : JMeterContainer> :
@@ -11,4 +13,6 @@ abstract class AbstractLogicControllerBuilder<T : JMeterContainer> :
     LogicControllersDsl,
     SamplersDsl,
     ConfigElementsDsl,
-    AssertionsDsl
+    AssertionsDsl,
+    PreProcessorsDsl,
+    PostProcessorsDsl

@@ -6,7 +6,7 @@ import tools.kenjiotsuka.jmeterk.model.core.JMeterLeafBuilder
 data class SizeAssertion(
     override val name: String,
     override val comment: String,
-    /** Which samples to apply this assertion to (GUI: "Apply to"). */
+    /** Which samples to apply this assertion to (GUI: "Apply to"). Default: [ApplyTo.MAIN_SAMPLE_ONLY]. */
     val applyTo: ApplyTo,
     /**
      * JMeter variable name to read the size from (GUI: "JMeter Variable Name to use").
@@ -21,18 +21,6 @@ data class SizeAssertion(
     val comparisonOperator: ComparisonOperator,
     override val enabled: Boolean
 ) : JMeterLeaf(name, comment, enabled) {
-
-    /** GUI: "Apply to" radio button group. */
-    enum class ApplyTo {
-        /** Main sample and sub-samples. JMX value: `"all"`. */
-        MAIN_SAMPLE_AND_SUB_SAMPLES,
-        /** Main sample only (default). JMX: `Assertion.scope` not emitted. */
-        MAIN_SAMPLE_ONLY,
-        /** Sub-samples only. JMX value: `"children"`. */
-        SUB_SAMPLES_ONLY,
-        /** Read size from a JMeter variable. JMX value: `"variable"` + `Scope.variable`. */
-        JMETER_VARIABLE
-    }
 
     /** GUI: "Response Size Field to Test" radio button group. */
     enum class ResponseField {
@@ -61,8 +49,8 @@ data class SizeAssertion(
 
 class SizeAssertionBuilder : JMeterLeafBuilder<SizeAssertion>() {
     override var name: String = "Size Assertion"
-    /** Which samples to apply this assertion to. Default: [SizeAssertion.ApplyTo.MAIN_SAMPLE_ONLY]. */
-    var applyTo: SizeAssertion.ApplyTo = SizeAssertion.ApplyTo.MAIN_SAMPLE_ONLY
+    /** Which samples to apply this assertion to. Default: [ApplyTo.MAIN_SAMPLE_ONLY]. */
+    var applyTo: ApplyTo = ApplyTo.MAIN_SAMPLE_ONLY
     /**
      * JMeter variable name to read the size from.
      * Only used when [applyTo] is [SizeAssertion.ApplyTo.JMETER_VARIABLE].

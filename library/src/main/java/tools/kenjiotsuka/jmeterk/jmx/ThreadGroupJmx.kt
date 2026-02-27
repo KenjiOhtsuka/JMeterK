@@ -1,17 +1,8 @@
 package tools.kenjiotsuka.jmeterk.jmx
 
-import tools.kenjiotsuka.jmeterk.model.thread.ActionToBeTakenAfterSampleError
 import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroup
 
 fun ThreadGroup.toJmxNode(): JmxElement {
-    val onError = when (actionToBeTakenAfterSampleError) {
-        ActionToBeTakenAfterSampleError.CONTINUE               -> "continue"
-        ActionToBeTakenAfterSampleError.START_NEXT_THREAD_LOOP -> "startnextloop"
-        ActionToBeTakenAfterSampleError.STOP_THREAD            -> "stopthread"
-        ActionToBeTakenAfterSampleError.STOP_TEST              -> "stoptest"
-        ActionToBeTakenAfterSampleError.STOP_TEST_NOW          -> "stoptestnow"
-    }
-
     val loopController = elementProp(
         "ThreadGroup.main_controller", "LoopController",
         "LoopControlPanel", "LoopController", "Loop Controller",
@@ -35,7 +26,9 @@ fun ThreadGroup.toJmxNode(): JmxElement {
             duration?.let    { add(longProp("ThreadGroup.duration", it.toLong())) }
             startupDelay?.let { add(longProp("ThreadGroup.delay",    it.toLong())) }
             add(boolProp("ThreadGroup.same_user_on_next_iteration", sameUserOnEachIteration))
-            add(stringProp("ThreadGroup.on_sample_error", onError))
+            if (specifyThreadLifetime) add(boolProp("ThreadGroup.scheduler", true))
+            if (delayThreadCreationUntilNeeded) add(boolProp("ThreadGroup.delayedStart", true))
+            add(stringProp("ThreadGroup.on_sample_error", actionToBeTakenAfterSampleError.jmxValue))
             add(loopController)
         }
     )

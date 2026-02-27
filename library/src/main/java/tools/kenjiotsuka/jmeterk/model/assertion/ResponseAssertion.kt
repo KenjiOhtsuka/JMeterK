@@ -16,7 +16,7 @@ data class ResponseAssertion(
     /** Treat each pattern as OR condition instead of AND. */
     val or: Boolean,
     /** Patterns to test against the target field. */
-    val patterns: Array<String>,
+    val patterns: List<String>,
     /** Custom failure message shown when the assertion fails. Empty string means no custom message. */
     val customFailureMessage: String,
     override val enabled: Boolean
@@ -44,39 +44,6 @@ data class ResponseAssertion(
         SUBSTRING,
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ResponseAssertion
-
-        if (ignoreStatus != other.ignoreStatus) return false
-        if (not != other.not) return false
-        if (or != other.or) return false
-        if (enabled != other.enabled) return false
-        if (name != other.name) return false
-        if (comment != other.comment) return false
-        if (fieldToTest != other.fieldToTest) return false
-        if (patternMatchingRule != other.patternMatchingRule) return false
-        if (!patterns.contentEquals(other.patterns)) return false
-        if (customFailureMessage != other.customFailureMessage) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = ignoreStatus.hashCode()
-        result = 31 * result + not.hashCode()
-        result = 31 * result + or.hashCode()
-        result = 31 * result + enabled.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + comment.hashCode()
-        result = 31 * result + fieldToTest.hashCode()
-        result = 31 * result + patternMatchingRule.hashCode()
-        result = 31 * result + patterns.contentHashCode()
-        result = 31 * result + customFailureMessage.hashCode()
-        return result
-    }
 }
 
 class ResponseAssertionBuilder : JMeterLeafBuilder<ResponseAssertion>() {
@@ -85,7 +52,7 @@ class ResponseAssertionBuilder : JMeterLeafBuilder<ResponseAssertion>() {
     var fieldToTest: ResponseAssertion.FieldToTest = ResponseAssertion.FieldToTest.TEXT_RESPONSE
     /** If true, mark the sample as successful before asserting (ignores HTTP error codes). */
     var ignoreStatus: Boolean = false
-    var matchingRule: ResponseAssertion.PatternMatchingRule = ResponseAssertion.PatternMatchingRule.SUBSTRING
+    var patternMatchingRule: ResponseAssertion.PatternMatchingRule = ResponseAssertion.PatternMatchingRule.SUBSTRING
     /** Invert the result of the matching rule. */
     var not: Boolean = false
     /** Treat each pattern as OR condition instead of AND. */
@@ -100,10 +67,10 @@ class ResponseAssertionBuilder : JMeterLeafBuilder<ResponseAssertion>() {
         comment = comment,
         fieldToTest = fieldToTest,
         ignoreStatus = ignoreStatus,
-        patternMatchingRule = matchingRule,
+        patternMatchingRule = patternMatchingRule,
         not = not,
         or = or,
-        patterns = patterns.toTypedArray(),
+        patterns = patterns.toList(),
         customFailureMessage = customFailureMessage,
         enabled = enabled
     )

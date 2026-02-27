@@ -1,7 +1,6 @@
 package tools.kenjiotsuka.jmeterk.model.logiccontroller
 
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
-import tools.kenjiotsuka.jmeterk.model.logiccontroller.AbstractLogicControllerBuilder
 
 data class IfController(
     override val name: String,
@@ -33,6 +32,3 @@ class IfControllerBuilder : AbstractLogicControllerBuilder<IfController>() {
         enabled = enabled
     )
 }
-
-fun ifController(block: IfControllerBuilder.() -> Unit): IfController =
-    IfControllerBuilder().apply(block).build()

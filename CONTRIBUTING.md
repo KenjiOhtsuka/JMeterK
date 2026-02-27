@@ -18,14 +18,17 @@ Requirements: JVM 21+ for building (library bytecode targets JVM 11+), Kotlin 2.
 JMeterK/
   library/
     src/main/java/tools/kenjiotsuka/jmeterk/
-      jmx/        ← JMX serialization (extension functions, converter)
+      jmx/        ← JMX serialization (extension functions, converter, shared helpers)
       model/      ← domain model + DSL builders
         core/     ← JMeterElement base classes, TestPlan, AnyElement
+        jsr223/   ← shared JSR223 infrastructure: Jsr223Language, AbstractJsr223LeafBuilder
         thread/   ← ThreadGroup, OpenModelThreadGroup, AbstractThreadGroupBuilder, ThreadsDsl
-        sampler/  ← HttpRequest, SamplersDsl
-        assertion/← ResponseAssertion, Jsr223Assertion, AssertionsDsl
+        sampler/  ← HttpRequest, DebugSampler, FlowControlAction, Jsr223Sampler, SamplersDsl
+        assertion/← ResponseAssertion, Jsr223Assertion, JsonAssertion, SizeAssertion, XPath2Assertion, ApplyTo, AssertionsDsl
         configelement/ ← HttpHeaderManager, ConfigElementsDsl
-        logiccontroller/ ← IfController, AbstractLogicControllerBuilder, LogicControllersDsl
+        logiccontroller/ ← IfController, LoopController, WhileController, TransactionController, AbstractLogicControllerBuilder, LogicControllersDsl
+        preprocessor/ ← Jsr223PreProcessor, PreProcessorsDsl
+        postprocessor/ ← Jsr223PostProcessor, PostProcessorsDsl
         ...       ← other JMeter categories (empty, awaiting implementation)
     src/test/
       java/       ← test sources
@@ -100,6 +103,7 @@ interface ConfigElementsDsl {
 Then implement the interface on the relevant abstract builder(s):
 - Elements that belong in threads/logic controllers → implement on `AbstractThreadGroupBuilder` and/or `AbstractLogicControllerBuilder`
 - Assertions / config elements on `HttpRequestBuilder` → implement `AssertionsDsl` / `ConfigElementsDsl` directly
+- Pre/post processors → add to `PreProcessorsDsl` / `PostProcessorsDsl` (already implemented on `AbstractThreadGroupBuilder` and `AbstractLogicControllerBuilder`)
 
 If the element is a new thread group variant, add it to `ThreadsDsl` and implement `ThreadsDsl` on `TestPlanBuilder`.
 

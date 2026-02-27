@@ -24,9 +24,9 @@ data class HttpRequest(
     val useMultipartFormData: Boolean,
     val browserCompatibleHeaders: Boolean,
 
-    val parameters: Array<Parameter>,
+    val parameters: List<Parameter>,
     val bodyData: String,
-    val filesUpload: Array<File>,
+    val filesUpload: List<File>,
 
     // advanced attributes
 
@@ -35,8 +35,8 @@ data class HttpRequest(
     override val enabled: Boolean
 ) : JMeterContainer(name, comment, enabled) {
     enum class Protocol {
-        HTTPS,
         HTTP,
+        HTTPS,
     }
 
     enum class Method {
@@ -92,31 +92,6 @@ data class HttpRequest(
         val mimeType: String,
     )
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as HttpRequest
-
-        if (enabled != other.enabled) return false
-        if (name != other.name) return false
-        if (comment != other.comment) return false
-        if (!parameters.contentEquals(other.parameters)) return false
-        if (bodyData != other.bodyData) return false
-        if (!filesUpload.contentEquals(other.filesUpload)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = enabled.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + comment.hashCode()
-        result = 31 * result + parameters.contentHashCode()
-        result = 31 * result + bodyData.hashCode()
-        result = 31 * result + filesUpload.contentHashCode()
-        return result
-    }
 }
 
 class HttpRequestBuilder : JMeterContainerBuilder<HttpRequest>(), AssertionsDsl, ConfigElementsDsl {
@@ -133,9 +108,9 @@ class HttpRequestBuilder : JMeterContainerBuilder<HttpRequest>(), AssertionsDsl,
     var useMultipartFormData: Boolean = false
     var browserCompatibleHeaders: Boolean = false
 
-    var parameters: MutableList<HttpRequest.Parameter> = emptyList<HttpRequest.Parameter>().toMutableList()
+    var parameters: MutableList<HttpRequest.Parameter> = mutableListOf()
     var bodyData: String = ""
-    var filesUpload: MutableList<HttpRequest.File> = emptyList<HttpRequest.File>().toMutableList()
+    var filesUpload: MutableList<HttpRequest.File> = mutableListOf()
 
     // ToDo: implement Advanced input fields in JMeter GUI
     override fun doBuild(): HttpRequest = HttpRequest(
@@ -152,13 +127,13 @@ class HttpRequestBuilder : JMeterContainerBuilder<HttpRequest>(), AssertionsDsl,
         useKeepAlive,
         useMultipartFormData,
         browserCompatibleHeaders,
-        parameters.toTypedArray(),
+        parameters.toList(),
         bodyData,
-        filesUpload.toTypedArray(),
+        filesUpload.toList(),
         enabled
     )
 
-    override fun validate(element: HttpRequest) {
+    override fun checkBuilt(element: HttpRequest) {
         require(element.parameters.isEmpty() || element.bodyData.isEmpty()) {
             "Cannot set both parameters and bodyData"
         }

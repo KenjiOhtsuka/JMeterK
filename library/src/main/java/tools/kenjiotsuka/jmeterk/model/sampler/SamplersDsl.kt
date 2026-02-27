@@ -12,4 +12,7 @@ interface SamplersDsl {
         add(DebugSamplerBuilder().apply(block).build())
     fun flowControlAction(block: FlowControlActionBuilder.() -> Unit) =
         add(FlowControlActionBuilder().apply(block).build())
+
+    fun jsr223Sampler(block: Jsr223SamplerBuilder.() -> Unit) =
+        add(Jsr223SamplerBuilder().apply(block).build())
 }

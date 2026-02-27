@@ -1,6 +1,6 @@
 package tools.kenjiotsuka.jmeterk.jmx
 
-class JmxConverter {
+internal class JmxConverter {
     fun convert(node: JmxNode): String = when (node) {
         is JmxElement  -> convertElement(node)
         is JmxText     -> escape(node.text)
