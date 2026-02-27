@@ -11,8 +11,10 @@ import tools.kenjiotsuka.jmeterk.model.core.JMeterElement
 import tools.kenjiotsuka.jmeterk.model.core.TestPlan
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.IfController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.LoopController
+import tools.kenjiotsuka.jmeterk.model.logiccontroller.TransactionController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.WhileController
 import tools.kenjiotsuka.jmeterk.model.sampler.DebugSampler
+import tools.kenjiotsuka.jmeterk.model.sampler.FlowControlAction
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
 import tools.kenjiotsuka.jmeterk.model.thread.OpenModelThreadGroup
 import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroup
@@ -26,12 +28,14 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     // Samplers
     is HttpRequest      -> toJmxNode()
     is DebugSampler     -> toJmxNode()
+    is FlowControlAction -> toJmxNode()
     // Config Element
     is HttpHeaderManager -> toJmxNode()
     // Logic Controllers
-    is IfController     -> toJmxNode()
-    is LoopController   -> toJmxNode()
-    is WhileController  -> toJmxNode()
+    is IfController          -> toJmxNode()
+    is LoopController        -> toJmxNode()
+    is WhileController       -> toJmxNode()
+    is TransactionController -> toJmxNode()
 
     // Listener
 

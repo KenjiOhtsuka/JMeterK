@@ -15,8 +15,8 @@ data class SizeAssertion(
     val jmeterVariableName: String,
     /** Which part of the response to measure (GUI: "Response Size Field to Test"). */
     val responseField: ResponseField,
-    /** Expected size in bytes (GUI: "Size to Assert" → "Size in bytes" text box). */
-    val size: Long,
+    /** Expected size in bytes (GUI: "Size to Assert" → "Size in bytes"). `null` means not set (serialized as empty string). Default: null. */
+    val size: Long?,
     /** How to compare the actual size to [size] (GUI: "Size to Assert" → "Type of Comparison" radio buttons: =, !=, >, <, >=, <=). Default: [ComparisonOperator.EQUAL]. */
     val comparisonOperator: ComparisonOperator,
     override val enabled: Boolean
@@ -70,8 +70,8 @@ class SizeAssertionBuilder : JMeterLeafBuilder<SizeAssertion>() {
     var jmeterVariableName: String = ""
     /** Response field to measure. Default: [SizeAssertion.ResponseField.FULL_RESPONSE]. */
     var responseField: SizeAssertion.ResponseField = SizeAssertion.ResponseField.FULL_RESPONSE
-    /** Expected size in bytes (GUI: "Size to Assert" → "Size in bytes"). Default: 0. */
-    var size: Long = 0L
+    /** Expected size in bytes (GUI: "Size to Assert" → "Size in bytes"). `null` means not set (serialized as empty string). Default: null. */
+    var size: Long? = null
     /** Type of comparison (GUI: "Size to Assert" → "Type of Comparison": =, !=, >, <, >=, <=). Default: [SizeAssertion.ComparisonOperator.EQUAL]. */
     var comparisonOperator: SizeAssertion.ComparisonOperator = SizeAssertion.ComparisonOperator.EQUAL
 

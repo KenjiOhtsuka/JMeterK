@@ -13,4 +13,7 @@ interface LogicControllersDsl {
 
     fun whileController(block: WhileControllerBuilder.() -> Unit) =
         add(WhileControllerBuilder().apply(block).build())
+
+    fun transactionController(block: TransactionControllerBuilder.() -> Unit) =
+        add(TransactionControllerBuilder().apply(block).build())
 }

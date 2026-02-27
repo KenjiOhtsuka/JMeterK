@@ -157,6 +157,19 @@ class TestPlanSerializationTest {
                         // invertAssertion = false (default)
                         // matchAsRegularExpression = true (default)
                     }
+
+                    sizeAssertion {
+                        name = "Size Assertion"
+                        // responseField = FULL_RESPONSE (default)
+                        // size = null → empty string (default)
+                        // comparisonOperator = EQUAL (default)
+                    }
+                }
+
+                transactionController {
+                    name = "Transaction Controller"
+                    // generateParentSample = false → not emitted (default)
+                    // includeTimers = false (default, always emitted)
                 }
             }
 

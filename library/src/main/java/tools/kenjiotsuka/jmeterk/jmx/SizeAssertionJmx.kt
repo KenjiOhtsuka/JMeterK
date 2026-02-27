@@ -3,6 +3,7 @@ package tools.kenjiotsuka.jmeterk.jmx
 import tools.kenjiotsuka.jmeterk.model.assertion.SizeAssertion
 
 fun SizeAssertion.toJmxNode(): JmxElement {
+    val sizeValue = size  // capture before buildList to avoid shadowing by List.size
     val testField = when (responseField) {
         SizeAssertion.ResponseField.FULL_RESPONSE    -> "SizeAssertion.response_network_size"
         SizeAssertion.ResponseField.RESPONSE_HEADERS -> "SizeAssertion.response_headers"
@@ -20,7 +21,7 @@ fun SizeAssertion.toJmxNode(): JmxElement {
         },
         children = buildList {
             add(stringProp("Assertion.test_field", testField))
-            add(stringProp("SizeAssertion.size", size.toString()))
+            add(stringProp("SizeAssertion.size", sizeValue?.toString() ?: ""))
             add(intProp("SizeAssertion.operator", comparisonOperator.jmxValue))
             when (applyTo) {
                 SizeAssertion.ApplyTo.MAIN_SAMPLE_AND_SUB_SAMPLES ->

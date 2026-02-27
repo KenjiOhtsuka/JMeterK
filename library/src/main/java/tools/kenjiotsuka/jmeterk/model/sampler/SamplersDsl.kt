@@ -10,4 +10,6 @@ interface SamplersDsl {
 
     fun debugSampler(block: DebugSamplerBuilder.() -> Unit) =
         add(DebugSamplerBuilder().apply(block).build())
+    fun flowControlAction(block: FlowControlActionBuilder.() -> Unit) =
+        add(FlowControlActionBuilder().apply(block).build())
 }
