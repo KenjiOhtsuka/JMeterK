@@ -25,10 +25,18 @@ fun HttpRequest.toJmxNode(): JmxElement {
         }
     }
 
-    val argumentsProp = elementProp(
-        "HTTPsampler.Arguments", "Arguments",
-        listOf(JmxElement("collectionProp", mapOf("name" to "Arguments.arguments"), argumentEntries))
-    )
+    val argumentsProp = if (isBodyDataMode) {
+        elementProp(
+            "HTTPsampler.Arguments", "Arguments",
+            listOf(JmxElement("collectionProp", mapOf("name" to "Arguments.arguments"), argumentEntries))
+        )
+    } else {
+        elementProp(
+            "HTTPsampler.Arguments", "Arguments",
+            "HTTPArgumentsPanel", "Arguments", "User Defined Variables",
+            listOf(JmxElement("collectionProp", mapOf("name" to "Arguments.arguments"), argumentEntries))
+        )
+    }
 
     return JmxElement(
         tag = "HTTPSamplerProxy",

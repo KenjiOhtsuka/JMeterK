@@ -10,7 +10,7 @@ cd JMeterK
 ./gradlew build
 ```
 
-Requirements: JVM 21+, Kotlin 2.x.
+Requirements: JVM 21+ for building (library bytecode targets JVM 11+), Kotlin 2.x.
 
 ## Project Structure
 
@@ -21,9 +21,11 @@ JMeterK/
       jmx/        ← JMX serialization (extension functions, converter)
       model/      ← domain model + DSL builders
         core/     ← JMeterElement base classes, TestPlan, AnyElement
-        thread/   ← ThreadGroup
-        sampler/  ← HttpRequest
-        assertion/← ResponseAssertion, Jsr223Assertion
+        thread/   ← ThreadGroup, OpenModelThreadGroup, AbstractThreadGroupBuilder, ThreadsDsl
+        sampler/  ← HttpRequest, SamplersDsl
+        assertion/← ResponseAssertion, Jsr223Assertion, AssertionsDsl
+        configelement/ ← HttpHeaderManager, ConfigElementsDsl
+        logiccontroller/ ← IfController, AbstractLogicControllerBuilder, LogicControllersDsl
         ...       ← other JMeter categories (empty, awaiting implementation)
     src/test/
       java/       ← test sources
@@ -83,14 +85,23 @@ class MyElementBuilder : JMeterLeafBuilder<MyElement>() {  // or JMeterContainer
 }
 ```
 
-Add a DSL method to each **parent builder** that can contain this element:
+Add a DSL function to the appropriate **category DSL interface** so all builders that support that category automatically gain the new DSL function:
 
 ```kotlin
-// in ThreadGroupBuilder (or wherever this element can appear):
-fun myElement(block: MyElementBuilder.() -> Unit) {
-    add(MyElementBuilder().apply(block).build())
+// in model/<category>/CategoryDsl.kt:
+interface ConfigElementsDsl {
+    fun add(child: JMeterElement)
+
+    fun myElement(block: MyElementBuilder.() -> Unit) =
+        add(MyElementBuilder().apply(block).build())
 }
 ```
+
+Then implement the interface on the relevant abstract builder(s):
+- Elements that belong in threads/logic controllers → implement on `AbstractThreadGroupBuilder` and/or `AbstractLogicControllerBuilder`
+- Assertions / config elements on `HttpRequestBuilder` → implement `AssertionsDsl` / `ConfigElementsDsl` directly
+
+If the element is a new thread group variant, add it to `ThreadsDsl` and implement `ThreadsDsl` on `TestPlanBuilder`.
 
 ### 3. JMX extension function — `jmx/<ElementName>Jmx.kt`
 
@@ -116,7 +127,7 @@ fun MyElement.toJmxNode(): JmxElement {
 Rules:
 - The `enabled` attribute is **only emitted when `false`**.
 - `toJmxNode()` must return **only the element's own config properties**. GUI children are placed in the sibling `<hashTree>` by `toJmxSubtree()` automatically — never include them here.
-- JMX property names follow `ClassName.property_name` convention. Cross-reference `testfile/test.jmx` or JMeter source.
+- JMX property names follow `ClassName.property_name` convention. Cross-reference `src/test/resources/test.jmx` or JMeter source.
 
 ### 4. Dispatch entry — `jmx/JmxDispatch.kt`
 
@@ -137,10 +148,10 @@ Add this line to the `when` expression in `JMeterElement.toJmxNode()`.
 
 ## Testing
 
-The integration test `TestPlanSerializationTest` verifies that the DSL output exactly matches `testfile/test.jmx` (after whitespace normalization). When adding a new element:
+The integration test `TestPlanSerializationTest` verifies that the DSL output exactly matches `src/test/resources/test.jmx` (after whitespace normalization). When adding a new element:
 
 1. Add it to the DSL in `TestPlanSerializationTest` if it appears in `test.jmx`.
-2. Update `testfile/test.jmx` and `src/test/resources/test.jmx` if you are adding a new reference example.
+2. Update `src/test/resources/test.jmx` if you are adding a new reference example.
 3. Run `./gradlew :library:test` to verify.
 
 ## Pull Requests

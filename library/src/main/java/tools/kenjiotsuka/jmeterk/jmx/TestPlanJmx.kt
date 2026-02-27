@@ -15,10 +15,10 @@ fun TestPlan.toJmxNode(): JmxElement {
     return JmxElement(
         tag = "TestPlan",
         attributes = attrs,
-        children = listOf(
-            userDefinedVars,
-            boolProp("TestPlan.functional_mode", functionalMode),
-            boolProp("TestPlan.serialize_threadgroups", serializeThreadGroups)
-        )
+        children = buildList {
+            add(userDefinedVars)
+            if (functionalMode) add(boolProp("TestPlan.functional_mode", true))
+            if (serializeThreadGroups) add(boolProp("TestPlan.serialize_threadgroups", true))
+        }
     )
 }

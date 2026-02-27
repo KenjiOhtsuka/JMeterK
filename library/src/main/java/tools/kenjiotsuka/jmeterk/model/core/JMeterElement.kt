@@ -1,7 +1,5 @@
 package tools.kenjiotsuka.jmeterk.model.core
 
-import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroupBuilder
-
 abstract class JMeterElement(
     open val name: String,
     open val comment: String,
@@ -66,4 +64,5 @@ abstract class JMeterContainerBuilder<T: JMeterContainer> : JMeterElementBuilder
     }
 }
 
-abstract class JMeterLeafBuilder<T: JMeterLeaf> : JMeterElementBuilder<T>() {}
+abstract class JMeterLeafBuilder<T: JMeterLeaf> : JMeterElementBuilder<T>()
+

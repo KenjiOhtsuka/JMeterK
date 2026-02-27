@@ -23,7 +23,8 @@ JMeterK is a Kotlin DSL library for programmatically constructing JMeter test pl
 ./gradlew :sample:run
 ```
 
-- Kotlin 2.3.0, JVM toolchain 21
+- Kotlin 2.3.0, JVM toolchain 21 (library bytecode targets JVM 11; sample targets JVM 21)
+- Multi-dollar string interpolation (`$$"..."`) available in Kotlin 2.2+ — used in `sample/` to write JMeter variable references like `$$"${varName}"` without backslash escaping
 - JUnit Jupiter (JUnit 5) for tests
 - Integration test: `TestPlanSerializationTest` compares `buildJmxDocument()` output against `src/test/resources/test.jmx`
 
@@ -36,11 +37,8 @@ JMeterK/
   library/                ← the JMeterK library (publishable artifact)
     build.gradle.kts
     src/main/             ← library source
-    src/test/             ← library tests
+    src/test/             ← library tests + test.jmx reference file
   sample/                 ← runnable sample project using the library
-    build.gradle.kts      ← implementation(project(":library"))
-    src/main/             ← sample code
-  testfile/               ← reference JMX files
 ```
 
 The `sample` module depends on `:library` via `implementation(project(":library"))` and demonstrates typical DSL usage. Run it with `./gradlew :sample:run`.
@@ -57,15 +55,40 @@ The codebase has two layers:
   - `JMeterElementBuilder` / `JMeterContainerBuilder` / `JMeterLeafBuilder` → corresponding builder base classes
 - Each element type lives in a sub-package matching its JMeter category:
   - `model/core/` — `TestPlan`, `AnyElement`
-  - `model/thread/` — `ThreadGroup`
-  - `model/sampler/` — `HttpRequest`
-  - `model/assertion/` — `ResponseAssertion`, `Jsr223Assertion`
-  - Empty packages exist for future elements: `configelement/`, `listener/`, `nontestelement/`, `postprocessor/`, `preprocessors/`, `testfragment/`, `timer/`
+  - `model/thread/` — `ThreadGroup`, `OpenModelThreadGroup`, `AbstractThreadGroupBuilder`, `ThreadsDsl`, `ActionToBeTakenAfterSampleError`
+  - `model/sampler/` — `HttpRequest`, `SamplersDsl`
+  - `model/assertion/` — `ResponseAssertion`, `Jsr223Assertion`, `AssertionsDsl`
+  - `model/configelement/` — `HttpHeaderManager`, `ConfigElementsDsl`
+  - `model/logiccontroller/` — `IfController`, `AbstractLogicControllerBuilder`, `LogicControllersDsl`
+  - Empty packages exist for future elements: `listener/`, `nontestelement/`, `postprocessor/`, `preprocessors/`, `testfragment/`, `timer/`
 
 The directory structure and classnames are based on JMeter GUI.
 The attributes of the classes are based on inputs of JMeter GUI.
 
-#### Naming conventions: GUI label vs JMX attribute name
+#### Category DSL interfaces and abstract builders
+
+To constrain which elements can be added where (mirroring JMeter's `getMenuCategories()` design), DSL functions are defined in **category interfaces** rather than directly on builder classes:
+
+- `LogicControllersDsl` — provides `ifController {}` etc.
+- `SamplersDsl` — provides `httpRequest {}` etc.
+- `ConfigElementsDsl` — provides `httpHeaderManager {}` etc.
+- `AssertionsDsl` — provides `responseAssertion {}`, `jsr223Assertion {}` etc.
+- `ThreadsDsl` — provides `threadGroup {}`, `openModelThreadGroup {}` etc.
+
+Each interface declares `fun add(child: JMeterElement)` as abstract (already implemented by `JMeterContainerBuilder`) and provides default DSL functions that call `add()`.
+
+Per-category **abstract builder classes** implement the appropriate interfaces and serve as the base for concrete builders:
+- `AbstractThreadGroupBuilder<T>` (`model/thread/`) — implements all 4 execution-context DSL interfaces; used by `ThreadGroupBuilder`, `OpenModelThreadGroupBuilder`
+- `AbstractLogicControllerBuilder<T>` (`model/logiccontroller/`) — same interfaces; used by `IfControllerBuilder`
+
+`TestPlanBuilder` implements `ThreadsDsl` only (test plans cannot directly contain samplers or logic controllers).
+`HttpRequestBuilder` implements `AssertionsDsl` and `ConfigElementsDsl` directly.
+
+#### `ActionToBeTakenAfterSampleError`
+
+Top-level enum in `model/thread/ActionToBeTakenAfterSampleError.kt`. Shared by `ThreadGroup` and `OpenModelThreadGroup`. Values: `CONTINUE`, `START_NEXT_THREAD_LOOP`, `STOP_THREAD`, `STOP_TEST`, `STOP_TEST_NOW`.
+
+
 
 Model field names follow the **JMeter GUI label** (e.g. `ignoreStatus`, `cacheCompiledScriptIfAvailable`). The serialization layer in `jmx/` maps these to the JMX XML attribute names (e.g. `Assertion.assume_success`, `cacheKey`). This separation keeps the DSL readable while producing spec-correct JMX output.
 
@@ -125,14 +148,14 @@ JMeter's JMX format uses a **flat sibling** structure, not XML nesting, to repre
 The `enabled` XML attribute is **only emitted when its value is `false`**. When `enabled = true` (the default), the attribute is omitted entirely, matching the JMeter JMX format.
 
 ### Reference file
-`testfile/test.jmx` is a hand-authored JMX file showing the expected XML output structure. `src/test/resources/test.jmx` is a copy used by the integration test.
+`src/test/resources/test.jmx` is the reference JMX file used by the integration test.
 
 ## Key Conventions
 
 ### Adding a new JMeter element
 Every new element requires these four pieces:
 1. **Model class** in `model/<category>/` extending `JMeterContainer` or `JMeterLeaf`
-2. **Builder class** in the same file extending `JMeterContainerBuilder` or `JMeterLeafBuilder`. Also add a DSL method to each **parent Builder** that can contain this element (e.g. add `fun httpRequest(...)` to `ThreadGroupBuilder`).
+2. **Builder class** in the same file extending `JMeterContainerBuilder` or `JMeterLeafBuilder`. Add the DSL function to the appropriate **category DSL interface** (e.g. `LogicControllersDsl`, `ConfigElementsDsl`). If a new category is needed, create a new `*Dsl` interface and implement it on `AbstractThreadGroupBuilder`, `AbstractLogicControllerBuilder`, or other relevant abstract builders. For new thread group types, add to `ThreadsDsl`.
 3. **JMX extension function** in `jmx/<ElementName>Jmx.kt` — `fun ElementName.toJmxNode(): JmxElement`. This function must only emit the element's own config props; **do not include GUI children** (handled by `toJmxSubtree()`).
 4. **Dispatch entry** in `JmxDispatch.kt` — add `is ElementName -> toJmxNode()` to the `when` block in `JMeterElement.toJmxNode()`.
 

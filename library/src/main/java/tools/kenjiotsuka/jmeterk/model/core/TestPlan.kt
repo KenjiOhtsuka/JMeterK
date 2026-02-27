@@ -1,6 +1,6 @@
 package tools.kenjiotsuka.jmeterk.model.core
 
-import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroupBuilder
+import tools.kenjiotsuka.jmeterk.model.thread.ThreadsDsl
 
 
 class TestPlan(
@@ -11,14 +11,10 @@ class TestPlan(
     override val enabled: Boolean
 ): JMeterContainer(name, comment, enabled)
 
-class TestPlanBuilder : JMeterContainerBuilder<TestPlan>() {
+class TestPlanBuilder : JMeterContainerBuilder<TestPlan>(), ThreadsDsl {
     override var name: String = "Test Plan"
     var functionalMode: Boolean = false
     var serializeThreadGroups: Boolean = false
-
-    fun threadGroup(block: ThreadGroupBuilder.() -> Unit) {
-        add(ThreadGroupBuilder().apply(block).build())
-    }
 
     override fun doBuild(): TestPlan {
         return TestPlan(

@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test
 import tools.kenjiotsuka.jmeterk.jmx.buildJmxDocument
 import tools.kenjiotsuka.jmeterk.model.assertion.Jsr223Assertion
 import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
+import tools.kenjiotsuka.jmeterk.model.configelement.HttpHeaderManagerBuilder
 import tools.kenjiotsuka.jmeterk.model.core.ConfigNode
 import tools.kenjiotsuka.jmeterk.model.core.testPlan
+import tools.kenjiotsuka.jmeterk.model.thread.ActionToBeTakenAfterSampleError
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
 
 class TestPlanSerializationTest {
@@ -21,8 +23,8 @@ class TestPlanSerializationTest {
     fun `serialized DSL output matches test jmx`() {
         val plan = testPlan {
             name = "Test Plan"
-            // functionalMode = false (default)
-            // serializeThreadGroups = false (default)
+            // functionalMode = false → omitted (default)
+            // serializeThreadGroups = false → omitted (default)
 
             threadGroup {
                 name = "Thread Group"
@@ -68,7 +70,7 @@ class TestPlanSerializationTest {
 
                     responseAssertion {
                         name = "Response Assertion !!!"
-                        enabled = false
+                        // enabled = true (default)
                         fieldToTest = ResponseAssertion.FieldToTest.TEXT_RESPONSE
                         matchingRule = ResponseAssertion.PatternMatchingRule.SUBSTRING
                         not = false
@@ -87,6 +89,35 @@ class TestPlanSerializationTest {
                         // filename = "" (default)
                     }
                 }
+
+                httpHeaderManager {
+                    name = "HTTP Header Manager"
+                    header("header1", "value1")
+                    header("header2", "value2")
+                    header("header1", "value3")
+                }
+
+                httpRequest {
+                    name = "HTTP Request"
+                    enabled = false
+                    httpRequestMethod = HttpRequest.Method.GET
+                    // bodyData = "" → parameters mode (default)
+                    // followRedirects = true (default)
+                    // useKeepAlive = true (default)
+                }
+
+                httpHeaderManager {
+                    name = "HTTP Header Manager"
+                    enabled = false
+                    // no headers
+                }
+
+                ifController {
+                    name = "If Controller"
+                    condition = "\${JMeterThread.last_sample_ok}\n\n\${JMeterThread.last_sample_ok}\n\n\${JMeterThread.last_sample_ok}"
+                    evaluateAll = true
+                    useExpression = true
+                }
             }
 
             threadGroup {
@@ -96,6 +127,13 @@ class TestPlanSerializationTest {
                 sameUserOnEachIteration = true
                 // duration = null → not emitted
                 // startupDelay = null → not emitted
+            }
+
+            openModelThreadGroup {
+                name = "Open Model Thread Group"
+                schedule = "rate(1/min) random_arrivals(10 min) /* comment */"
+                randomSeed = 5678L
+                actionToBeTakenAfterSampleError = ActionToBeTakenAfterSampleError.STOP_TEST_NOW
             }
         }
 
@@ -114,5 +152,7 @@ class TestPlanSerializationTest {
      * Single spaces inside text nodes (e.g. Argument.value = " ") are preserved.
      */
     private fun normalizeXml(xml: String): String =
-        xml.replace(Regex(">[\r\n][ \t]*<"), "><").trim()
+        xml.replace(Regex(">[\r\n][ \t]*<"), "><")
+           .replace(Regex("""\s+enabled="true""""), "")
+           .trim()
 }

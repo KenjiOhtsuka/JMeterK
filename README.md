@@ -9,21 +9,25 @@ JMeter test plans are stored as `.jmx` files — verbose XML that is difficult t
 - **Track changes** — XML diffs are noisy and hard to understand at a glance
 - **Review** — Pull request reviews on raw `.jmx` files require deep familiarity with JMeter's XML structure
 - **Collaborate** — It is easy to accidentally overwrite a colleague's changes when multiple people edit the same GUI file
+- **Modularize** — The GUI treats the test plan as a single monolithic file; there is no way to split it across multiple files or share common parts between plans
+- **Reuse** — Common configurations (e.g. a shared set of HTTP requests used by multiple thread groups) must be duplicated by hand in the GUI
 
-JMeterK solves this by letting you define test plans in Kotlin code. The code is human-readable, diffable, and reviewable like any other source file, while the library handles generating the correct `.jmx` XML.
+JMeterK solves this by letting you define test plans in Kotlin code. The code is human-readable, diffable, and reviewable like any other source file, while the library handles generating the correct `.jmx` XML. Because it is plain Kotlin, you can split large test plans across multiple files and share common request definitions between thread groups — something the JMeter GUI cannot do.
 
 ## Features
 
 - Type-safe, readable DSL for constructing JMeter test plans
 - Produces valid `.jmx` files that can be opened and run in JMeter as-is
-- Covers common JMeter elements: `TestPlan`, `ThreadGroup`, `HTTPSamplerProxy`, `ResponseAssertion`, `JSR223Assertion`
+- Covers common JMeter elements: `TestPlan`, `ThreadGroup`, `OpenModelThreadGroup`, `HTTPSamplerProxy`, `ResponseAssertion`, `JSR223Assertion`, `HttpHeaderManager`, `IfController`
+- **Split across files** — define thread groups and requests in separate files; compose them in `testPlan {}`
+- **Share and reuse** — extract common request definitions (e.g. `val loginRequest: HttpRequestBuilder.() -> Unit`) and use them across multiple thread groups
 - Escape hatch via `AnyElement` for elements not yet supported by the typed model
 - Clean architecture: model layer is pure data; JMX serialization is isolated in a separate package
 
 ## Requirements
 
-- JVM 21+
-- Kotlin 2.x
+- JVM 11+
+- Kotlin 2.x (2.2+ recommended for multi-dollar string interpolation)
 
 ## Installation
 
@@ -107,7 +111,7 @@ threadGroup {
     duration = 60              // seconds; only emitted when set
     startupDelay = 0           // seconds; only emitted when set
     sameUserOnEachIteration = false
-    actionToBeTakenAfterSampleError = ThreadGroup.ActionToBeTakenAfterSampleError.CONTINUE
+    actionToBeTakenAfterSampleError = ActionToBeTakenAfterSampleError.CONTINUE
 
     httpRequest { ... }
 }
@@ -169,6 +173,42 @@ jsr223Assertion {
 ```
 
 **`Language` values:** `BEAN_SHELL`, `GROOVY`, `JAVA`, `JAVASCRIPT`, `JEXL`, `JEXL2`, `JEXL3`, `NASHORN`
+
+### OpenModelThreadGroup
+
+```kotlin
+openModelThreadGroup {
+    name = "Open Model Thread Group"
+    schedule = "rate(10/sec) random_arrivals(60 sec)"   // Open Model DSL expression
+    randomSeed = 0L         // 0 = new random seed every run
+    actionToBeTakenAfterSampleError = ActionToBeTakenAfterSampleError.CONTINUE
+
+    httpRequest { ... }
+}
+```
+
+### IfController
+
+```kotlin
+ifController {
+    name = "If Controller"
+    condition = "\${JMeterThread.last_sample_ok}"
+    evaluateAll = false     // evaluate condition for all threads (default: false)
+    useExpression = true    // use expression evaluator (default: true)
+
+    httpRequest { ... }
+}
+```
+
+### HttpHeaderManager
+
+```kotlin
+httpHeaderManager {
+    name = "HTTP Header Manager"
+    header("Content-Type", "application/json")
+    header("Authorization", "Bearer \${token}")
+}
+```
 
 ### AnyElement (escape hatch)
 

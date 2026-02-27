@@ -1,49 +1,24 @@
 package tools.kenjiotsuka.sample
 
 import tools.kenjiotsuka.jmeterk.jmx.buildJmxDocument
-import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
 import tools.kenjiotsuka.jmeterk.model.core.testPlan
-import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
+import tools.kenjiotsuka.sample.threads.aThreadGroup
+import tools.kenjiotsuka.sample.threads.anotherThreadGroup
 import java.io.File
 
 /**
  * Sample: build a JMeter test plan and write it to a .jmx file.
+ *
+ * Demonstrates multi-dollar string interpolation (Kotlin 2.2+) for writing
+ * JMeter variable references like ${username} without backslash escaping.
  *
  * Run with: ./gradlew :sample:run
  */
 fun main() {
     val plan = testPlan {
         name = "Sample Test Plan"
-
-        threadGroup {
-            name = "Users"
-            numberOfThreads = 10
-            rampUpPeriodTime = 5
-
-            httpRequest {
-                name = "GET example.com"
-                serverNameOrIp = "example.com"
-                protocol = HttpRequest.Protocol.HTTPS
-                httpRequestMethod = HttpRequest.Method.GET
-                path = "/"
-
-                responseAssertion {
-                    name = "Status 200"
-                    fieldToTest = ResponseAssertion.FieldToTest.RESPONSE_CODE
-                    matchingRule = ResponseAssertion.PatternMatchingRule.EQUALS
-                    patterns.add("200")
-                }
-            }
-
-            httpRequest {
-                name = "POST api/login"
-                serverNameOrIp = "example.com"
-                protocol = HttpRequest.Protocol.HTTPS
-                httpRequestMethod = HttpRequest.Method.POST
-                path = "/api/login"
-                bodyData = """{"username":"user","password":"pass"}"""
-            }
-        }
+        add(aThreadGroup)    // ThreadGroup object — defined in AThreadGroup.kt
+        anotherThreadGroup() // TestPlanBuilder lambda — defined in AnotherThreadGroup.kt
     }
 
     val jmx = buildJmxDocument(plan)
