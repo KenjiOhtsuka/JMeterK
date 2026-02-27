@@ -1,0 +1,15 @@
+[*.kt]
+end_of_line = lf
+charset = utf-8
+
+[*.kts]
+end_of_line = lf
+charset = utf-8
+
+[*.sh]
+end_of_line = lf
+charset = utf-8
+
+[*.bat]
+end_of_line = crlf
+charset = utf-8
