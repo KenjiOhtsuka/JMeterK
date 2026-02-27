@@ -13,4 +13,7 @@ interface AssertionsDsl {
 
     fun jsonAssertion(block: JsonAssertionBuilder.() -> Unit) =
         add(JsonAssertionBuilder().apply(block).build())
+
+    fun sizeAssertion(block: SizeAssertionBuilder.() -> Unit) =
+        add(SizeAssertionBuilder().apply(block).build())
 }

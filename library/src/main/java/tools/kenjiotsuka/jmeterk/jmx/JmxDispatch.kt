@@ -3,6 +3,7 @@ package tools.kenjiotsuka.jmeterk.jmx
 import tools.kenjiotsuka.jmeterk.model.assertion.Jsr223Assertion
 import tools.kenjiotsuka.jmeterk.model.assertion.JsonAssertion
 import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
+import tools.kenjiotsuka.jmeterk.model.assertion.SizeAssertion
 import tools.kenjiotsuka.jmeterk.model.configelement.HttpHeaderManager
 import tools.kenjiotsuka.jmeterk.model.core.AnyElement
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
@@ -44,6 +45,7 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     is ResponseAssertion -> toJmxNode()
     is Jsr223Assertion   -> toJmxNode()
     is JsonAssertion     -> toJmxNode()
+    is SizeAssertion     -> toJmxNode()
 
     // Test Fragment
 
