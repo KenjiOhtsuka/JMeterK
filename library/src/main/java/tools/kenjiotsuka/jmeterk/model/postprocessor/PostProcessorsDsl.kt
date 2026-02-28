@@ -7,4 +7,10 @@ interface PostProcessorsDsl {
 
     fun jsr223PostProcessor(block: Jsr223PostProcessorBuilder.() -> Unit) =
         add(Jsr223PostProcessorBuilder().apply(block).build())
+
+    fun cssSelectorExtractor(block: CssSelectorExtractorBuilder.() -> Unit) =
+        add(CssSelectorExtractorBuilder().apply(block).build())
+
+    fun jsonExtractor(block: JsonExtractorBuilder.() -> Unit) =
+        add(JsonExtractorBuilder().apply(block).build())
 }

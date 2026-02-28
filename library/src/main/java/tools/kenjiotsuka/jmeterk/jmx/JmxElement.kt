@@ -26,6 +26,9 @@ fun intProp(name: String, value: Int): JmxElement =
 fun longProp(name: String, value: Long): JmxElement =
     JmxElement("longProp", mapOf("name" to name), listOf(JmxText(value.toString())))
 
+fun collectionProp(name: String, children: List<JmxNode>): JmxElement =
+    JmxElement("collectionProp", mapOf("name" to name), children)
+
 fun elementProp(name: String, elementType: String, children: List<JmxNode>) = JmxElement(
     "elementProp",
     mapOf("name" to name, "elementType" to elementType),

@@ -9,6 +9,9 @@ import tools.kenjiotsuka.jmeterk.model.configelement.HttpHeaderManagerBuilder
 import tools.kenjiotsuka.jmeterk.model.core.ConfigNode
 import tools.kenjiotsuka.jmeterk.model.core.testPlan
 import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223Language
+import tools.kenjiotsuka.jmeterk.model.assertion.ApplyTo
+import tools.kenjiotsuka.jmeterk.model.postprocessor.CssSelectorExtractor
+import tools.kenjiotsuka.jmeterk.model.preprocessor.UserParametersBuilder
 import tools.kenjiotsuka.jmeterk.model.sampler.FlowControlAction
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
 import tools.kenjiotsuka.jmeterk.model.thread.ActionToBeTakenAfterSampleError
@@ -90,13 +93,6 @@ class TestPlanSerializationTest {
                         // script = "" (default)
                         // filename = "" (default)
                     }
-                }
-
-                httpHeaderManager {
-                    name = "HTTP Header Manager"
-                    header("header1", "value1")
-                    header("header2", "value2")
-                    header("header1", "value3")
                 }
 
                 httpRequest {
@@ -212,6 +208,152 @@ class TestPlanSerializationTest {
                     // language = GROOVY (default)
                 }
             }
+
+            threadGroup {
+                name = "Config Manager Thread Group"
+                comment = "This is a thread group for testing manager"
+                numberOfThreads = 1
+                rampUpPeriodTime = 1
+                sameUserOnEachIteration = true
+
+                anyElement {
+                    tagName = "CSVDataSet"
+                    attributes = mapOf(
+                        "guiclass" to "TestBeanGUI",
+                        "testclass" to "CSVDataSet",
+                        "testname" to "CSV Data Set Config"
+                    )
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "delimiter"); value = "," }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "fileEncoding"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "filename"); value = "" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "ignoreFirstLine"); value = "false" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "quotedData"); value = "false" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "recycle"); value = "true" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "shareMode"); value = "shareMode.all" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "stopThread"); value = "false" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "variableNames"); value = "" }
+                }
+
+                httpHeaderManager {
+                    name = "HTTP Header Manager"
+                    header("header1", "value1")
+                    header("header2", "value2")
+                    header("header1", "value3")
+                }
+
+                anyElement {
+                    tagName = "CookieManager"
+                    attributes = mapOf(
+                        "guiclass" to "CookiePanel",
+                        "testclass" to "CookieManager",
+                        "testname" to "HTTP Cookie Manager"
+                    )
+                    configNode { tagName = "collectionProp"; attributes = mapOf("name" to "CookieManager.cookies") }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "CookieManager.clearEachIteration"); value = "false" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "CookieManager.controlledByThreadGroup"); value = "false" }
+                }
+
+                anyElement {
+                    tagName = "CacheManager"
+                    attributes = mapOf(
+                        "guiclass" to "CacheManagerGui",
+                        "testclass" to "CacheManager",
+                        "testname" to "HTTP Cache Manager"
+                    )
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "clearEachIteration"); value = "false" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "useExpires"); value = "true" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "CacheManager.controlledByThread"); value = "false" }
+                }
+
+                anyElement {
+                    tagName = "ConfigTestElement"
+                    attributes = mapOf(
+                        "guiclass" to "HttpDefaultsGui",
+                        "testclass" to "ConfigTestElement",
+                        "testname" to "HTTP Request Defaults"
+                    )
+                    configNode {
+                        tagName = "elementProp"
+                        attributes = mapOf(
+                            "name" to "HTTPsampler.Arguments",
+                            "elementType" to "Arguments",
+                            "guiclass" to "HTTPArgumentsPanel",
+                            "testclass" to "Arguments",
+                            "testname" to "User Defined Variables"
+                        )
+                        configNode { tagName = "collectionProp"; attributes = mapOf("name" to "Arguments.arguments") }
+                    }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "HTTPSampler.implementation"); value = "HttpClient4" }
+                }
+            }
+
+            threadGroup {
+                name = "PreProcessor Thread Group"
+                numberOfThreads = 1
+                rampUpPeriodTime = 1
+                sameUserOnEachIteration = true
+
+                userParameters {
+                    name = "User Parameters"
+                    comment = "User Parameters Comment"
+                    // perIteration = false (default)
+                    variable("u", "t", "")
+                    variable("t", "", "g")
+                }
+            }
+
+            threadGroup {
+                name = "PostProcessor Thread Group"
+                numberOfThreads = 1
+                rampUpPeriodTime = 1
+                sameUserOnEachIteration = true
+
+                cssSelectorExtractor {
+                    applyTo = ApplyTo.MAIN_SAMPLE_AND_SUB_SAMPLES
+                }
+
+                cssSelectorExtractor {
+                    referenceName = "name_of_created_variable"
+                    cssSelector = ".css_selector_expression"
+                    attribute = "attribute"
+                    useEmptyDefaultValue = true
+                    matchNo = -1
+                    implementation = CssSelectorExtractor.Implementation.JODD
+                    applyTo = ApplyTo.SUB_SAMPLES_ONLY
+                }
+
+                jsonExtractor {
+                    // all fields default (name = "JSON Extractor", applyTo = MAIN_SAMPLE_ONLY)
+                }
+
+                anyElement {
+                    tagName = "JMESPathExtractor"
+                    attributes = mapOf(
+                        "guiclass" to "JMESPathExtractorGui",
+                        "testclass" to "JMESPathExtractor",
+                        "testname" to "JSON JMESPath Extractor"
+                    )
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "JMESExtractor.referenceName"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "JMESExtractor.jmesPathExpr"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "JMESExtractor.matchNumber"); value = "" }
+                }
+
+                anyElement {
+                    tagName = "BoundaryExtractor"
+                    attributes = mapOf(
+                        "guiclass" to "BoundaryExtractorGui",
+                        "testclass" to "BoundaryExtractor",
+                        "testname" to "Boundary Extractor"
+                    )
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.useHeaders"); value = "false" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.refname"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.lboundary"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.rboundary"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.default"); value = "" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "BoundaryExtractor.default_empty_value"); value = "false" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.match_number"); value = "" }
+                }
+            }
         }
 
         val actual = normalizeXml(buildJmxDocument(plan))
@@ -231,5 +373,7 @@ class TestPlanSerializationTest {
     private fun normalizeXml(xml: String): String =
         xml.replace(Regex(">[\r\n][ \t]*<"), "><")
            .replace(Regex("""\s+enabled="true""""), "")
+           // Strip numeric name attributes (JMeter-internal hashCode IDs on collectionProp/stringProp)
+           .replace(Regex(""" name="-?\d+""""), "")
            .trim()
 }

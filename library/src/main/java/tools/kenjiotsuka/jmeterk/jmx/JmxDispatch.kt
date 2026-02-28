@@ -14,8 +14,11 @@ import tools.kenjiotsuka.jmeterk.model.logiccontroller.IfController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.LoopController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.TransactionController
 import tools.kenjiotsuka.jmeterk.model.logiccontroller.WhileController
+import tools.kenjiotsuka.jmeterk.model.postprocessor.CssSelectorExtractor
 import tools.kenjiotsuka.jmeterk.model.postprocessor.Jsr223PostProcessor
+import tools.kenjiotsuka.jmeterk.model.postprocessor.JsonExtractor
 import tools.kenjiotsuka.jmeterk.model.preprocessor.Jsr223PreProcessor
+import tools.kenjiotsuka.jmeterk.model.preprocessor.UserParameters
 import tools.kenjiotsuka.jmeterk.model.sampler.DebugSampler
 import tools.kenjiotsuka.jmeterk.model.sampler.FlowControlAction
 import tools.kenjiotsuka.jmeterk.model.sampler.HttpRequest
@@ -36,8 +39,11 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     is Jsr223Sampler     -> toJmxNode()
     // Pre Processors
     is Jsr223PreProcessor  -> toJmxNode()
+    is UserParameters      -> toJmxNode()
     // Post Processors
-    is Jsr223PostProcessor -> toJmxNode()
+    is Jsr223PostProcessor    -> toJmxNode()
+    is CssSelectorExtractor   -> toJmxNode()
+    is JsonExtractor          -> toJmxNode()
     // Config Element
     is HttpHeaderManager -> toJmxNode()
     // Logic Controllers

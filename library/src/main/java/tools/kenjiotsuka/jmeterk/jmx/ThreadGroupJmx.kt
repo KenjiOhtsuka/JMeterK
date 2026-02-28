@@ -21,6 +21,7 @@ fun ThreadGroup.toJmxNode(): JmxElement {
         tag = "ThreadGroup",
         attributes = attrs,
         children = buildList {
+            if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
             add(intProp("ThreadGroup.num_threads", numberOfThreads))
             add(intProp("ThreadGroup.ramp_time", rampUpPeriodTime))
             duration?.let    { add(longProp("ThreadGroup.duration", it.toLong())) }
