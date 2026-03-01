@@ -17,6 +17,7 @@ import tools.kenjiotsuka.jmeterk.model.logiccontroller.WhileController
 import tools.kenjiotsuka.jmeterk.model.postprocessor.CssSelectorExtractor
 import tools.kenjiotsuka.jmeterk.model.postprocessor.Jsr223PostProcessor
 import tools.kenjiotsuka.jmeterk.model.postprocessor.JsonExtractor
+import tools.kenjiotsuka.jmeterk.model.postprocessor.JsonJmesPathExtractor
 import tools.kenjiotsuka.jmeterk.model.preprocessor.Jsr223PreProcessor
 import tools.kenjiotsuka.jmeterk.model.preprocessor.UserParameters
 import tools.kenjiotsuka.jmeterk.model.sampler.DebugSampler
@@ -44,6 +45,7 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     is Jsr223PostProcessor    -> toJmxNode()
     is CssSelectorExtractor   -> toJmxNode()
     is JsonExtractor          -> toJmxNode()
+    is JsonJmesPathExtractor  -> toJmxNode()
     // Config Element
     is HttpHeaderManager -> toJmxNode()
     // Logic Controllers

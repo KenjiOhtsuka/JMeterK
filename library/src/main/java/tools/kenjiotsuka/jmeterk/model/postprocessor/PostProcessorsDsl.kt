@@ -13,4 +13,7 @@ interface PostProcessorsDsl {
 
     fun jsonExtractor(block: JsonExtractorBuilder.() -> Unit) =
         add(JsonExtractorBuilder().apply(block).build())
+
+    fun jsonJmesPathExtractor(block: JsonJmesPathExtractorBuilder.() -> Unit) =
+        add(JsonJmesPathExtractorBuilder().apply(block).build())
 }

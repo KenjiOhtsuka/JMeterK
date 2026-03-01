@@ -326,16 +326,8 @@ class TestPlanSerializationTest {
                     // all fields default (name = "JSON Extractor", applyTo = MAIN_SAMPLE_ONLY)
                 }
 
-                anyElement {
-                    tagName = "JMESPathExtractor"
-                    attributes = mapOf(
-                        "guiclass" to "JMESPathExtractorGui",
-                        "testclass" to "JMESPathExtractor",
-                        "testname" to "JSON JMESPath Extractor"
-                    )
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "JMESExtractor.referenceName"); value = "" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "JMESExtractor.jmesPathExpr"); value = "" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "JMESExtractor.matchNumber"); value = "" }
+                jsonJmesPathExtractor {
+                    // all fields default (name = "JSON JMESPath Extractor", applyTo = MAIN_SAMPLE_ONLY)
                 }
 
                 anyElement {
