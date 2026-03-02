@@ -29,6 +29,19 @@ fun longProp(name: String, value: Long): JmxElement =
 fun collectionProp(name: String, children: List<JmxNode>): JmxElement =
     JmxElement("collectionProp", mapOf("name" to name), children)
 
+/**
+ * JMeter's special `<doubleProp>` structure (uses child elements, not a `name` attribute).
+ * `savedValue` is always `0.0` (JMeter internal).
+ */
+fun doubleProp(name: String, value: Double): JmxElement = JmxElement(
+    tag = "doubleProp",
+    children = listOf(
+        JmxElement("name", children = listOf(JmxText(name))),
+        JmxElement("value", children = listOf(JmxText(value.toString()))),
+        JmxElement("savedValue", children = listOf(JmxText("0.0")))
+    )
+)
+
 fun elementProp(name: String, elementType: String, children: List<JmxNode>) = JmxElement(
     "elementProp",
     mapOf("name" to name, "elementType" to elementType),

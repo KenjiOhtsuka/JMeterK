@@ -10,4 +10,10 @@ interface TimersDsl {
 
     fun uniformRandomTimer(block: UniformRandomTimerBuilder.() -> Unit) =
         add(UniformRandomTimerBuilder().apply(block).build())
+
+    fun preciseThroughputTimer(block: PreciseThroughputTimerBuilder.() -> Unit) =
+        add(PreciseThroughputTimerBuilder().apply(block).build())
+
+    fun constantThroughputTimer(block: ConstantThroughputTimerBuilder.() -> Unit) =
+        add(ConstantThroughputTimerBuilder().apply(block).build())
 }

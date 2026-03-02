@@ -28,6 +28,8 @@ import tools.kenjiotsuka.jmeterk.model.sampler.Jsr223Sampler
 import tools.kenjiotsuka.jmeterk.model.thread.OpenModelThreadGroup
 import tools.kenjiotsuka.jmeterk.model.thread.ThreadGroup
 import tools.kenjiotsuka.jmeterk.model.timer.ConstantTimer
+import tools.kenjiotsuka.jmeterk.model.timer.ConstantThroughputTimer
+import tools.kenjiotsuka.jmeterk.model.timer.PreciseThroughputTimer
 import tools.kenjiotsuka.jmeterk.model.timer.UniformRandomTimer
 
 fun JMeterElement.toJmxNode(): JmxNode = when (this) {
@@ -61,8 +63,10 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     // Listener
 
     // Timer
-    is ConstantTimer      -> toJmxNode()
-    is UniformRandomTimer -> toJmxNode()
+    is ConstantTimer             -> toJmxNode()
+    is UniformRandomTimer        -> toJmxNode()
+    is PreciseThroughputTimer    -> toJmxNode()
+    is ConstantThroughputTimer   -> toJmxNode()
     // Assertions
     is ResponseAssertion -> toJmxNode()
     is Jsr223Assertion   -> toJmxNode()
