@@ -7,6 +7,7 @@ import tools.kenjiotsuka.jmeterk.model.core.JMeterContainerBuilder
 import tools.kenjiotsuka.jmeterk.model.postprocessor.PostProcessorsDsl
 import tools.kenjiotsuka.jmeterk.model.preprocessor.PreProcessorsDsl
 import tools.kenjiotsuka.jmeterk.model.sampler.SamplersDsl
+import tools.kenjiotsuka.jmeterk.model.timer.TimersDsl
 
 abstract class AbstractLogicControllerBuilder<T : JMeterContainer> :
     JMeterContainerBuilder<T>(),
@@ -15,4 +16,5 @@ abstract class AbstractLogicControllerBuilder<T : JMeterContainer> :
     ConfigElementsDsl,
     AssertionsDsl,
     PreProcessorsDsl,
-    PostProcessorsDsl
+    PostProcessorsDsl,
+    TimersDsl

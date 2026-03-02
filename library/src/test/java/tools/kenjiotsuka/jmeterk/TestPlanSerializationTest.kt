@@ -335,10 +335,41 @@ class TestPlanSerializationTest {
                     referenceName = "name of created variable"
                     leftBoundary = "left boundary"
                     useEmptyDefaultValue = true
-                    matchNo = -1
+                    matchNo = 3
                     applyTo = ApplyTo.JMETER_VARIABLE
                     comment = "comment"
                 }
+
+                boundaryExtractor {
+                    // all fields default (name = "Boundary Extractor", fieldToCheck = BODY, applyTo = MAIN_SAMPLE_ONLY)
+                }
+
+                anyElement {
+                    tagName = "RegexExtractor"
+                    attributes = mapOf(
+                        "guiclass" to "RegexExtractorGui",
+                        "testclass" to "RegexExtractor",
+                        "testname" to "Regular Expression Extractor"
+                    )
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "RegexExtractor.useHeaders"); value = "false" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "RegexExtractor.refname"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "RegexExtractor.regex"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "RegexExtractor.template"); value = "" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "RegexExtractor.default"); value = "" }
+                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "RegexExtractor.default_empty_value"); value = "false" }
+                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "RegexExtractor.match_number"); value = "" }
+                }
+            }
+
+            threadGroup {
+                name = "Timer Thread Group"
+                numberOfThreads = 1
+                rampUpPeriodTime = 1
+                sameUserOnEachIteration = true
+
+                constantTimer { /* all defaults: delay = 300 */ }
+
+                uniformRandomTimer { /* all defaults: randomDelayMaximum = 100.0, constantDelayOffset = 0 */ }
             }
         }
 

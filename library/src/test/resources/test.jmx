@@ -334,11 +334,52 @@ ${JMeterThread.last_sample_ok}</stringProp>
           <stringProp name="BoundaryExtractor.rboundary"></stringProp>
           <stringProp name="BoundaryExtractor.default"></stringProp>
           <boolProp name="BoundaryExtractor.default_empty_value">true</boolProp>
-          <stringProp name="BoundaryExtractor.match_number">-1</stringProp>
+          <stringProp name="BoundaryExtractor.match_number">3</stringProp>
           <stringProp name="Sample.scope">variable</stringProp>
           <stringProp name="Scope.variable"></stringProp>
           <stringProp name="TestPlan.comments">comment</stringProp>
         </BoundaryExtractor>
+        <hashTree/>
+        <BoundaryExtractor guiclass="BoundaryExtractorGui" testclass="BoundaryExtractor" testname="Boundary Extractor">
+          <stringProp name="BoundaryExtractor.useHeaders">false</stringProp>
+          <stringProp name="BoundaryExtractor.refname"></stringProp>
+          <stringProp name="BoundaryExtractor.lboundary"></stringProp>
+          <stringProp name="BoundaryExtractor.rboundary"></stringProp>
+          <stringProp name="BoundaryExtractor.default"></stringProp>
+          <boolProp name="BoundaryExtractor.default_empty_value">false</boolProp>
+          <stringProp name="BoundaryExtractor.match_number"></stringProp>
+        </BoundaryExtractor>
+        <hashTree/>
+        <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor">
+          <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+          <stringProp name="RegexExtractor.refname"></stringProp>
+          <stringProp name="RegexExtractor.regex"></stringProp>
+          <stringProp name="RegexExtractor.template"></stringProp>
+          <stringProp name="RegexExtractor.default"></stringProp>
+          <boolProp name="RegexExtractor.default_empty_value">false</boolProp>
+          <stringProp name="RegexExtractor.match_number"></stringProp>
+        </RegexExtractor>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Timer Thread Group">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer">
+          <stringProp name="ConstantTimer.delay">300</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer">
+          <stringProp name="ConstantTimer.delay">0</stringProp>
+          <stringProp name="RandomTimer.range">100.0</stringProp>
+        </UniformRandomTimer>
         <hashTree/>
       </hashTree>
     </hashTree>

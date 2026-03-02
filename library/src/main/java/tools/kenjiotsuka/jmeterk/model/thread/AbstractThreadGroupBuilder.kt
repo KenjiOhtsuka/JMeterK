@@ -8,6 +8,7 @@ import tools.kenjiotsuka.jmeterk.model.logiccontroller.LogicControllersDsl
 import tools.kenjiotsuka.jmeterk.model.postprocessor.PostProcessorsDsl
 import tools.kenjiotsuka.jmeterk.model.preprocessor.PreProcessorsDsl
 import tools.kenjiotsuka.jmeterk.model.sampler.SamplersDsl
+import tools.kenjiotsuka.jmeterk.model.timer.TimersDsl
 
 abstract class AbstractThreadGroupBuilder<T : JMeterContainer> :
     JMeterContainerBuilder<T>(),
@@ -16,4 +17,5 @@ abstract class AbstractThreadGroupBuilder<T : JMeterContainer> :
     ConfigElementsDsl,
     AssertionsDsl,
     PreProcessorsDsl,
-    PostProcessorsDsl
+    PostProcessorsDsl,
+    TimersDsl
