@@ -10,6 +10,7 @@ import tools.kenjiotsuka.jmeterk.model.core.ConfigNode
 import tools.kenjiotsuka.jmeterk.model.core.testPlan
 import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223Language
 import tools.kenjiotsuka.jmeterk.model.assertion.ApplyTo
+import tools.kenjiotsuka.jmeterk.model.postprocessor.BoundaryExtractor
 import tools.kenjiotsuka.jmeterk.model.postprocessor.CssSelectorExtractor
 import tools.kenjiotsuka.jmeterk.model.preprocessor.UserParametersBuilder
 import tools.kenjiotsuka.jmeterk.model.sampler.FlowControlAction
@@ -330,20 +331,13 @@ class TestPlanSerializationTest {
                     // all fields default (name = "JSON JMESPath Extractor", applyTo = MAIN_SAMPLE_ONLY)
                 }
 
-                anyElement {
-                    tagName = "BoundaryExtractor"
-                    attributes = mapOf(
-                        "guiclass" to "BoundaryExtractorGui",
-                        "testclass" to "BoundaryExtractor",
-                        "testname" to "Boundary Extractor"
-                    )
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.useHeaders"); value = "false" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.refname"); value = "" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.lboundary"); value = "" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.rboundary"); value = "" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.default"); value = "" }
-                    configNode { tagName = "boolProp"; attributes = mapOf("name" to "BoundaryExtractor.default_empty_value"); value = "false" }
-                    configNode { tagName = "stringProp"; attributes = mapOf("name" to "BoundaryExtractor.match_number"); value = "" }
+                boundaryExtractor {
+                    referenceName = "name of created variable"
+                    leftBoundary = "left boundary"
+                    useEmptyDefaultValue = true
+                    matchNo = -1
+                    applyTo = ApplyTo.JMETER_VARIABLE
+                    comment = "comment"
                 }
             }
         }

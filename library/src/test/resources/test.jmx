@@ -20,7 +20,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action !!!" enabled="true">
+        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Flow Control Action !!!">
           <intProp name="ActionProcessor.action">1</intProp>
           <intProp name="ActionProcessor.target">0</intProp>
           <stringProp name="ActionProcessor.duration">0</stringProp>
@@ -329,12 +329,15 @@ ${JMeterThread.last_sample_ok}</stringProp>
         <hashTree/>
         <BoundaryExtractor guiclass="BoundaryExtractorGui" testclass="BoundaryExtractor" testname="Boundary Extractor">
           <stringProp name="BoundaryExtractor.useHeaders">false</stringProp>
-          <stringProp name="BoundaryExtractor.refname"></stringProp>
-          <stringProp name="BoundaryExtractor.lboundary"></stringProp>
+          <stringProp name="BoundaryExtractor.refname">name of created variable</stringProp>
+          <stringProp name="BoundaryExtractor.lboundary">left boundary</stringProp>
           <stringProp name="BoundaryExtractor.rboundary"></stringProp>
           <stringProp name="BoundaryExtractor.default"></stringProp>
-          <boolProp name="BoundaryExtractor.default_empty_value">false</boolProp>
-          <stringProp name="BoundaryExtractor.match_number"></stringProp>
+          <boolProp name="BoundaryExtractor.default_empty_value">true</boolProp>
+          <stringProp name="BoundaryExtractor.match_number">-1</stringProp>
+          <stringProp name="Sample.scope">variable</stringProp>
+          <stringProp name="Scope.variable"></stringProp>
+          <stringProp name="TestPlan.comments">comment</stringProp>
         </BoundaryExtractor>
         <hashTree/>
       </hashTree>
