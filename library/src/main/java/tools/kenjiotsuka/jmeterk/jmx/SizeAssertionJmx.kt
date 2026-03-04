@@ -21,6 +21,7 @@ fun SizeAssertion.toJmxNode(): JmxElement {
             if (!enabled) put("enabled", "false")
         },
         children = buildList {
+            if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
             add(stringProp("Assertion.test_field", testField))
             add(stringProp("SizeAssertion.size", sizeValue?.toString() ?: ""))
             add(intProp("SizeAssertion.operator", comparisonOperator.jmxValue))

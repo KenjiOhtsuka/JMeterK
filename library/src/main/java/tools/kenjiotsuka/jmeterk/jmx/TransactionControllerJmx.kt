@@ -11,6 +11,7 @@ fun TransactionController.toJmxNode(): JmxElement = JmxElement(
         if (!enabled) put("enabled", "false")
     },
     children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
         add(boolProp("TransactionController.includeTimers", includeTimers))
         // TransactionController.parent is only emitted when true (false is JMeter default)
         if (generateParentSample) add(boolProp("TransactionController.parent", true))

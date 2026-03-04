@@ -10,7 +10,8 @@ fun WhileController.toJmxNode(): JmxElement = JmxElement(
         put("testname", name)
         if (!enabled) put("enabled", "false")
     },
-    children = listOf(
-        stringProp("WhileController.condition", condition)
-    )
+    children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+        add(stringProp("WhileController.condition", condition))
+    }
 )

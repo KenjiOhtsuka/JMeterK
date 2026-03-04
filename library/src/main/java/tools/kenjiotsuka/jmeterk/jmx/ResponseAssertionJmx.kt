@@ -1,5 +1,6 @@
 package tools.kenjiotsuka.jmeterk.jmx
 
+import tools.kenjiotsuka.jmeterk.model.assertion.ApplyTo
 import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
 
 fun ResponseAssertion.toJmxNode(): JmxElement {
@@ -35,12 +36,24 @@ fun ResponseAssertion.toJmxNode(): JmxElement {
             put("guiclass", "AssertionGui"); put("testclass", "ResponseAssertion"); put("testname", name)
             if (!enabled) put("enabled", "false")
         },
-        children = listOf(
-            testStrings,
-            stringProp("Assertion.custom_message", customFailureMessage),
-            stringProp("Assertion.test_field", testField),
-            boolProp("Assertion.assume_success", ignoreStatus),
-            intProp("Assertion.test_type", testType)
-        )
+        children = buildList {
+            if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+            add(testStrings)
+            add(stringProp("Assertion.custom_message", customFailureMessage))
+            add(stringProp("Assertion.test_field", testField))
+            add(boolProp("Assertion.assume_success", ignoreStatus))
+            add(intProp("Assertion.test_type", testType))
+            when (applyTo) {
+                ApplyTo.MAIN_SAMPLE_AND_SUB_SAMPLES ->
+                    add(stringProp("Assertion.scope", "all"))
+                ApplyTo.SUB_SAMPLES_ONLY ->
+                    add(stringProp("Assertion.scope", "children"))
+                ApplyTo.JMETER_VARIABLE -> {
+                    add(stringProp("Assertion.scope", "variable"))
+                    add(stringProp("Scope.variable", jmeterVariableName))
+                }
+                ApplyTo.MAIN_SAMPLE_ONLY -> { /* default — Assertion.scope not emitted */ }
+            }
+        }
     )
 }

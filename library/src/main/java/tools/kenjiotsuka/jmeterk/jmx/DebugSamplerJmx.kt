@@ -10,9 +10,10 @@ fun DebugSampler.toJmxNode(): JmxElement = JmxElement(
         put("testname", name)
         if (!enabled) put("enabled", "false")
     },
-    children = listOf(
-        boolProp("displayJMeterProperties", displayJMeterProperties),
-        boolProp("displayJMeterVariables", displayJMeterVariables),
-        boolProp("displaySystemProperties", displaySystemProperties)
-    )
+    children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+        add(boolProp("displayJMeterProperties", displayJMeterProperties))
+        add(boolProp("displayJMeterVariables", displayJMeterVariables))
+        add(boolProp("displaySystemProperties", displaySystemProperties))
+    }
 )

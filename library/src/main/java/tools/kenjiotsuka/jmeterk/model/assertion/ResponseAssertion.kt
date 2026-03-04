@@ -6,6 +6,13 @@ import tools.kenjiotsuka.jmeterk.model.core.JMeterLeafBuilder
 data class ResponseAssertion(
     override val name: String,
     override val comment: String,
+    /** GUI: "Apply to" radio buttons. Default: [ApplyTo.MAIN_SAMPLE_ONLY]. */
+    val applyTo: ApplyTo,
+    /**
+     * JMeter variable name used when [applyTo] is [ApplyTo.JMETER_VARIABLE].
+     * JMX: `Scope.variable`.
+     */
+    val jmeterVariableName: String,
     /** Which part of the response to test against. */
     val fieldToTest: FieldToTest,
     val patternMatchingRule: PatternMatchingRule,
@@ -48,6 +55,10 @@ data class ResponseAssertion(
 
 class ResponseAssertionBuilder : JMeterLeafBuilder<ResponseAssertion>() {
     override var name: String = "Response Assertion"
+    /** GUI: "Apply to" radio buttons. Default: [ApplyTo.MAIN_SAMPLE_ONLY]. */
+    var applyTo: ApplyTo = ApplyTo.MAIN_SAMPLE_ONLY
+    /** JMeter variable name used when [applyTo] is [ApplyTo.JMETER_VARIABLE]. */
+    var jmeterVariableName: String = ""
     /** Which part of the response to test against. */
     var fieldToTest: ResponseAssertion.FieldToTest = ResponseAssertion.FieldToTest.TEXT_RESPONSE
     /** If true, mark the sample as successful before asserting (ignores HTTP error codes). */
@@ -65,6 +76,8 @@ class ResponseAssertionBuilder : JMeterLeafBuilder<ResponseAssertion>() {
     override fun doBuild(): ResponseAssertion = ResponseAssertion(
         name = name,
         comment = comment,
+        applyTo = applyTo,
+        jmeterVariableName = jmeterVariableName,
         fieldToTest = fieldToTest,
         ignoreStatus = ignoreStatus,
         patternMatchingRule = patternMatchingRule,

@@ -17,6 +17,7 @@ fun OpenModelThreadGroup.toJmxNode(): JmxElement {
             if (!enabled) put("enabled", "false")
         },
         children = buildList {
+            if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
             if (schedule.isNotEmpty()) add(stringProp("OpenModelThreadGroup.schedule", schedule))
             if (randomSeed != 0L) add(longProp("OpenModelThreadGroup.random_seed", randomSeed))
             add(stringProp("ThreadGroup.on_sample_error", actionToBeTakenAfterSampleError.jmxValue))

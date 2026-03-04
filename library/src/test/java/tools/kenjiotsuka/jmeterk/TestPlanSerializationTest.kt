@@ -24,6 +24,8 @@ class TestPlanSerializationTest {
             preProcessorThreadGroup()
             postProcessorThreadGroup()
             timerThreadGroup()
+            listenerThreadGroup()
+            samplerThreadGroup()
         }
 
         val actual = normalizeXml(buildJmxDocument(plan))

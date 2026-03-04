@@ -1,9 +1,11 @@
 package tools.kenjiotsuka.jmeterk.jmx
 
+import tools.kenjiotsuka.jmeterk.model.core.JMeterElement
 import tools.kenjiotsuka.jmeterk.model.jsr223.Jsr223ScriptElement
 
 /** Returns the JMX child props shared by all JSR223 script elements. */
-internal fun Jsr223ScriptElement.jsr223ScriptChildren(): List<JmxNode> = buildList {
+internal fun <T> T.jsr223ScriptChildren(): List<JmxNode>
+        where T : Jsr223ScriptElement, T : JMeterElement = buildList {
     add(stringProp("cacheKey", cacheCompiledScriptIfAvailable.toString()))
     add(stringProp("filename", filename))
     add(stringProp("parameters", parameters))

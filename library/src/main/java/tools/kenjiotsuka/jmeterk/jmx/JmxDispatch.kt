@@ -5,6 +5,7 @@ import tools.kenjiotsuka.jmeterk.model.assertion.JsonAssertion
 import tools.kenjiotsuka.jmeterk.model.assertion.ResponseAssertion
 import tools.kenjiotsuka.jmeterk.model.assertion.SizeAssertion
 import tools.kenjiotsuka.jmeterk.model.assertion.XPath2Assertion
+import tools.kenjiotsuka.jmeterk.model.configelement.CsvDataSetConfig
 import tools.kenjiotsuka.jmeterk.model.configelement.HttpHeaderManager
 import tools.kenjiotsuka.jmeterk.model.core.AnyElement
 import tools.kenjiotsuka.jmeterk.model.core.JMeterContainer
@@ -53,6 +54,7 @@ fun JMeterElement.toJmxNode(): JmxNode = when (this) {
     is JsonJmesPathExtractor  -> toJmxNode()
     is BoundaryExtractor      -> toJmxNode()
     // Config Element
+    is CsvDataSetConfig  -> toJmxNode()
     is HttpHeaderManager -> toJmxNode()
     // Logic Controllers
     is IfController          -> toJmxNode()

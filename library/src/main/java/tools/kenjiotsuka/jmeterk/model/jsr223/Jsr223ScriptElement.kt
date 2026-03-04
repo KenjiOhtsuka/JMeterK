@@ -8,5 +8,4 @@ interface Jsr223ScriptElement {
     val filename: String
     val parameters: String
     val cacheCompiledScriptIfAvailable: Boolean
-    val comment: String
 }

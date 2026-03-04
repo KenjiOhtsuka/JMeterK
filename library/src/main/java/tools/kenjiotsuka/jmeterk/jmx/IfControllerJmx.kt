@@ -10,9 +10,10 @@ fun IfController.toJmxNode(): JmxElement = JmxElement(
         put("testname", name)
         if (!enabled) put("enabled", "false")
     },
-    children = listOf(
-        stringProp("IfController.condition", condition),
-        boolProp("IfController.evaluateAll", evaluateAll),
-        boolProp("IfController.useExpression", useExpression)
-    )
+    children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+        add(stringProp("IfController.condition", condition))
+        add(boolProp("IfController.evaluateAll", evaluateAll))
+        add(boolProp("IfController.useExpression", useExpression))
+    }
 )

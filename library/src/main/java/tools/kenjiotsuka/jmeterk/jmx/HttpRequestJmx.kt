@@ -45,6 +45,7 @@ fun HttpRequest.toJmxNode(): JmxElement {
             if (!enabled) put("enabled", "false")
         },
         children = buildList {
+            if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
             protocol?.let { add(stringProp("HTTPSampler.protocol", it.name.lowercase())) }
             serverNameOrIp?.let { add(stringProp("HTTPSampler.domain", it)) }
             portNumber?.let { add(intProp("HTTPSampler.port", it)) }
@@ -58,6 +59,19 @@ fun HttpRequest.toJmxNode(): JmxElement {
             if (browserCompatibleHeaders) add(boolProp("HTTPSampler.BROWSER_COMPATIBLE_MULTIPART", true))
             add(boolProp("HTTPSampler.postBodyRaw", isBodyDataMode))
             add(argumentsProp)
+            if (filesUpload.isNotEmpty()) {
+                add(JmxElement(
+                    tag = "collectionProp",
+                    attributes = mapOf("name" to "HTTPsampler.Files"),
+                    children = filesUpload.map { f ->
+                        elementProp(f.filePath, "HTTPFileArg", listOf(
+                            stringProp("File.path", f.filePath),
+                            stringProp("File.paramname", f.parameterName),
+                            stringProp("File.mimetype", f.mimeType)
+                        ))
+                    }
+                ))
+            }
         }
     )
 }

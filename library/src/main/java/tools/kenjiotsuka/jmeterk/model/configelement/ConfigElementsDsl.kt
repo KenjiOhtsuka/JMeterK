@@ -7,4 +7,7 @@ interface ConfigElementsDsl {
 
     fun httpHeaderManager(block: HttpHeaderManagerBuilder.() -> Unit) =
         add(HttpHeaderManagerBuilder().apply(block).build())
+
+    fun csvDataSetConfig(block: CsvDataSetConfigBuilder.() -> Unit) =
+        add(CsvDataSetConfigBuilder().apply(block).build())
 }

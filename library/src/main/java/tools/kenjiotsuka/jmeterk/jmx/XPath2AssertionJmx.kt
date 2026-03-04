@@ -12,6 +12,7 @@ fun XPath2Assertion.toJmxNode(): JmxElement = JmxElement(
         if (!enabled) put("enabled", "false")
     },
     children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
         add(boolProp("XPath.negate", invertAssertion))
         add(stringProp("XPath.xpath", xPath))
         add(stringProp("XPath.namespaces", namespacesAliasesList))

@@ -10,22 +10,8 @@ internal fun TestPlanBuilder.configManagerThreadGroup() {
         rampUpPeriodTime = 1
         sameUserOnEachIteration = true
 
-        anyElement {
-            tagName = "CSVDataSet"
-            attributes = mapOf(
-                "guiclass" to "TestBeanGUI",
-                "testclass" to "CSVDataSet",
-                "testname" to "CSV Data Set Config"
-            )
-            configNode { tagName = "stringProp"; attributes = mapOf("name" to "delimiter"); value = "," }
-            configNode { tagName = "stringProp"; attributes = mapOf("name" to "fileEncoding"); value = "" }
-            configNode { tagName = "stringProp"; attributes = mapOf("name" to "filename"); value = "" }
-            configNode { tagName = "boolProp"; attributes = mapOf("name" to "ignoreFirstLine"); value = "false" }
-            configNode { tagName = "boolProp"; attributes = mapOf("name" to "quotedData"); value = "false" }
-            configNode { tagName = "boolProp"; attributes = mapOf("name" to "recycle"); value = "true" }
-            configNode { tagName = "stringProp"; attributes = mapOf("name" to "shareMode"); value = "shareMode.all" }
-            configNode { tagName = "boolProp"; attributes = mapOf("name" to "stopThread"); value = "false" }
-            configNode { tagName = "stringProp"; attributes = mapOf("name" to "variableNames"); value = "" }
+        csvDataSetConfig {
+            customStopThreadOnEof = "\${1 + 1}"
         }
 
         httpHeaderManager {

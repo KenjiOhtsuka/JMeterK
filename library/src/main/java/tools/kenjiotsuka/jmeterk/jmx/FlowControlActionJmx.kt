@@ -10,9 +10,10 @@ fun FlowControlAction.toJmxNode(): JmxElement = JmxElement(
         put("testname", name)
         if (!enabled) put("enabled", "false")
     },
-    children = listOf(
-        intProp("ActionProcessor.action", action.jmxValue),
-        intProp("ActionProcessor.target", target.jmxValue),
-        stringProp("ActionProcessor.duration", duration.toString())
-    )
+    children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+        add(intProp("ActionProcessor.action", action.jmxValue))
+        add(intProp("ActionProcessor.target", target.jmxValue))
+        add(stringProp("ActionProcessor.duration", duration.toString()))
+    }
 )

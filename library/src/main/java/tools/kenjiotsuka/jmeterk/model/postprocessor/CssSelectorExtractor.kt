@@ -26,7 +26,7 @@ data class CssSelectorExtractor(
     val matchNo: Int?,
     /**
      * GUI: "Default Value". JMX: `HtmlExtractor.default`.
-     * Ignored (not emitted) when [useEmptyDefaultValue] is true.
+     * Always serialized. When [useEmptyDefaultValue] is true, JMeter ignores this value at runtime.
      */
     val defaultValue: String,
     /** GUI: "Use empty default value" checkbox. JMX: `HtmlExtractor.default_empty_value`. Default: false. */

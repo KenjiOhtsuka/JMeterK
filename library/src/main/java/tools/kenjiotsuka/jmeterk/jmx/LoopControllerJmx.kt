@@ -11,6 +11,9 @@ fun LoopController.toJmxNode(): JmxElement = JmxElement(
         if (!enabled) put("enabled", "false")
     },
     children = buildList {
+        if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+        // Standalone LoopController uses intProp for loops. The embedded version inside
+        // ThreadGroup uses stringProp instead — this asymmetry matches JMeter's own serialization.
         add(intProp("LoopController.loops", loopCount ?: -1))
         if (loopCount != null) add(boolProp("LoopController.continue_forever", false))
     }

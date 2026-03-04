@@ -24,6 +24,9 @@ fun HttpHeaderManager.toJmxNode(): JmxElement {
             put("testname", name)
             if (!enabled) put("enabled", "false")
         },
-        children = listOf(headersCollection)
+        children = buildList {
+            if (comment.isNotEmpty()) add(stringProp("TestPlan.comments", comment))
+            add(headersCollection)
+        }
     )
 }

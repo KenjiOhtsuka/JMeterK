@@ -6,6 +6,9 @@ fun ThreadGroup.toJmxNode(): JmxElement {
     val loopController = elementProp(
         "ThreadGroup.main_controller", "LoopController",
         "LoopControlPanel", "LoopController", "Loop Controller",
+        // Embedded LoopController uses stringProp for loops (JMeter serializes it this way
+        // when the controller is inlined inside ThreadGroup, as opposed to a standalone
+        // LoopController element which uses intProp). This asymmetry is intentional.
         listOf(
             stringProp("LoopController.loops", loopCount?.toString() ?: "-1"),
             boolProp("LoopController.continue_forever", loopCount == null)
